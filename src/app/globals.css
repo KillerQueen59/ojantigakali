@@ -1,0 +1,327 @@
+@import 'tailwindcss';
+
+/* ─── Theme: Light ─────────────────────────────────────────────────── */
+[data-theme='light'] {
+  --ornament-stroke: rgba(42, 36, 32, 0.13);
+  --ornament-text: rgba(42, 36, 32, 0.55);
+  --ornament-sub: rgba(42, 36, 32, 0.3);
+  --ornament-fill-major: rgba(42, 36, 32, 0.5);
+  --ornament-fill-minor: rgba(42, 36, 32, 0.2);
+  --needle-north: #e8920a;
+  --needle-south: rgba(255, 255, 255, 0.92);
+  --needle-ring: rgba(42, 36, 32, 0.35);
+  --desktop-bg: #f3f3f3;
+  --menubar-bg: #d4cec0;
+  --menubar-pill: #ffffff;
+  --menubar-pill-text: #2a2420;
+  --btn-accent-edge: rgba(0, 0, 0, 0.35);
+  --btn-accent-text: #ffffff;
+  --btn-secondary-edge: rgba(0, 0, 0, 0.28);
+  --menubar-text: #2a2420;
+  --icon-bg: rgba(255, 255, 255, 0.82);
+  --icon-bg-active: #1c1a17;
+  --icon-text: #2a2420;
+  --icon-text-active: #ffffff;
+  --icon-accent: #f5a623;
+  --window-bg: #f7f5f0;
+  --window-titlebar: #eae6de;
+  --window-titlebar-border: rgba(0, 0, 0, 0.08);
+  --window-border: rgba(0, 0, 0, 0.12);
+  --window-shadow: rgba(0, 0, 0, 0.18);
+  --window-text: #2a2420;
+  --window-text-muted: #6b6560;
+  --window-close: #ff5f57;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Theme: Dark / Arcade ──────────────────────────────────────────── */
+:root,
+[data-theme='dark'] {
+  --ornament-stroke: rgba(0, 220, 255, 0.35);
+  --ornament-text: rgba(200, 235, 255, 0.9);
+  --ornament-sub: rgba(160, 200, 255, 0.6);
+  --ornament-fill-major: rgba(200, 235, 255, 0.85);
+  --ornament-fill-minor: rgba(120, 180, 255, 0.4);
+  --needle-north: #00dfff;
+  --needle-south: rgba(200, 235, 255, 0.92);
+  --needle-ring: rgba(0, 220, 255, 0.5);
+  --desktop-bg: #060412;
+  /* Menubar */
+  --menubar-bg: #0b081e;
+  --menubar-pill: #c050ff;
+  --menubar-pill-text: #ffffff;
+  --btn-accent-edge: rgba(0, 0, 0, 0.45);
+  --btn-accent-text: #ffffff;
+  --btn-secondary-edge: rgba(0, 0, 0, 0.45);
+  --menubar-text: #b8d0f0;
+  /* Icons */
+  --icon-bg: rgba(0, 180, 255, 0.09);
+  --icon-bg-active: #00ccff;
+  --icon-text: #b8d0f0;
+  --icon-text-active: #ffffff;
+  --icon-accent: #c050ff;
+  /* Window */
+  --window-bg: #0e0b1e;
+  --window-titlebar: #160f2a;
+  --window-titlebar-border: rgba(0, 200, 255, 0.1);
+  --window-border: rgba(0, 200, 255, 0.18);
+  --window-shadow: rgba(0, 0, 0, 0.75);
+  --window-text: #cce0ff;
+  --window-text-muted: #6878a8;
+  --window-close: #ff5f57;
+  --scrollbar-thumb: rgba(0, 200, 255, 0.2);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* Prevent pull-to-refresh & double-tap zoom on mobile */
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+/* ─── Dragging ──────────────────────────────────────────────────────── */
+.dragging * {
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ─── Degree-ring CSS spin (not needle — GSAP handles needle) ─────── */
+@keyframes spin-degree-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-degree-ring-rev {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* ─── Tooltip on icon label ─────────────────────────────────────────── */
+@keyframes icon-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Tiptap / ProseMirror editor ───────────────────────────────────── */
+.tiptap-editor:focus {
+  outline: none;
+}
+
+.tiptap-editor p {
+  margin: 0 0 0.75em;
+  line-height: 1.75;
+  font-size: 14px;
+  color: var(--window-text);
+}
+.tiptap-editor h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 1.2em 0 0.4em;
+  color: var(--window-text);
+  letter-spacing: -0.03em;
+}
+.tiptap-editor h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 1em 0 0.35em;
+  color: var(--window-text);
+}
+.tiptap-editor ul {
+  padding-left: 1.4em;
+  margin: 0 0 0.75em;
+}
+.tiptap-editor ol {
+  padding-left: 1.4em;
+  margin: 0 0 0.75em;
+}
+.tiptap-editor li {
+  margin-bottom: 0.3em;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--window-text);
+}
+.tiptap-editor code {
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 12px;
+  background: var(--window-titlebar);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--icon-accent);
+}
+.tiptap-editor pre {
+  background: var(--window-titlebar);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 0.75em;
+  overflow-x: auto;
+}
+.tiptap-editor pre code {
+  background: none;
+  padding: 0;
+  color: var(--window-text);
+}
+.tiptap-editor blockquote {
+  border-left: 3px solid var(--icon-accent);
+  padding-left: 14px;
+  margin: 0 0 0.75em;
+  color: var(--window-text-muted);
+  font-style: italic;
+}
+.tiptap-editor hr {
+  border: none;
+  border-top: 1px solid var(--window-titlebar-border);
+  margin: 1.2em 0;
+}
+.tiptap-editor a {
+  color: var(--icon-accent);
+  text-decoration: underline;
+}
+.tiptap-editor strong {
+  font-weight: 700;
+}
+.tiptap-editor em {
+  font-style: italic;
+}
+.tiptap-editor s {
+  text-decoration: line-through;
+}
+.tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--window-text-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Images inside the editor */
+.tiptap-editor img.editor-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+  cursor: default;
+}
+.tiptap-editor img.editor-img.ProseMirror-selectednode {
+  outline: 2.5px solid var(--icon-accent);
+  outline-offset: 3px;
+}
+
+/* Tiptap prose — used when rendering saved HTML in JournalWindow */
+.journal-body p {
+  margin: 0 0 0.9em;
+  line-height: 1.8;
+  font-size: 14px;
+  color: var(--window-text-muted);
+}
+.journal-body h2 {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 1.2em 0 0.4em;
+  color: var(--window-text);
+}
+.journal-body h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 1em 0 0.35em;
+  color: var(--window-text);
+}
+.journal-body ul,
+.journal-body ol {
+  padding-left: 1.4em;
+  margin: 0 0 0.9em;
+}
+.journal-body li {
+  margin-bottom: 0.3em;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--window-text-muted);
+}
+.journal-body code {
+  font-size: 12px;
+  background: var(--window-titlebar);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--icon-accent);
+}
+.journal-body pre {
+  background: var(--window-titlebar);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 0.9em;
+  overflow-x: auto;
+}
+.journal-body pre code {
+  background: none;
+  padding: 0;
+}
+.journal-body blockquote {
+  border-left: 3px solid var(--icon-accent);
+  padding-left: 14px;
+  margin: 0 0 0.9em;
+  color: var(--window-text-muted);
+  font-style: italic;
+}
+.journal-body hr {
+  border: none;
+  border-top: 1px solid var(--window-titlebar-border);
+  margin: 1.2em 0;
+}
+.journal-body a {
+  color: var(--icon-accent);
+  text-decoration: underline;
+}
+.journal-body strong {
+  font-weight: 700;
+}
+.journal-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.8em auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+}
