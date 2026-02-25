@@ -17,7 +17,7 @@ export default function CmsProjectsPage() {
     })
 
   const addItem = () =>
-    setItems((prev) => [...prev, { name: '', type: '', emoji: '📦', url: '', desc: '', stack: [], highlights: [] }])
+    setItems((prev) => [...prev, { name: '', type: '', icon: '📦', url: '', desc: '', stack: [], highlights: [] }])
 
   const removeItem = (i: number) =>
     setItems((prev) => prev.filter((_, idx) => idx !== i))
@@ -35,8 +35,8 @@ export default function CmsProjectsPage() {
       {items.map((proj, i) => (
         <Card key={i} title={proj.name || `Project ${i + 1}`} onRemove={() => removeItem(i)}>
           <Grid>
-            <Field label="Emoji">
-              <Input value={proj.emoji} onChange={(v) => update(i, 'emoji', v)} placeholder="📦" />
+            <Field label="Icon">
+              <Input value={proj.icon} onChange={(v) => update(i, 'icon', v)} placeholder="📦" />
             </Field>
             <Field label="URL">
               <Input value={proj.url} onChange={(v) => update(i, 'url', v)} placeholder="https://..." />
