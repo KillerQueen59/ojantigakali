@@ -10,8 +10,11 @@ const pressStart = Press_Start_2P({
 })
 
 export const metadata: Metadata = {
-  title: 'Muhammad Fauzan Ramadhan | Portfolio',
+  title: "Ojantigakali's Arcade",
   description: 'Software Engineer specializing in backend systems, fintech, and full-stack development.',
+  icons: {
+    icon: '/ojantigakali-animated-round.gif',
+  },
 }
 
 export const viewport: Viewport = {

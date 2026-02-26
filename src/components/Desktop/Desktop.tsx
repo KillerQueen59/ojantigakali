@@ -10,7 +10,6 @@ import {
   Github,
   FileText,
   Search,
-  Feather,
 } from 'lucide-react';
 
 import Menubar from '../Menubar/Menubar';
@@ -18,7 +17,6 @@ import DesktopIcon from '../DesktopIcon';
 import WindowModal from '../WindowModal';
 import AboutWindow from '../windows/AboutWindow';
 import ProjectsWindow from '../windows/ProjectsWindow';
-import JournalWindow from '../windows/JournalWindow';
 import ExperienceWindow from '../windows/ExperienceWindow';
 import EducationWindow from '../windows/EducationWindow';
 import ContactWindow from '../windows/ContactWindow';
@@ -30,6 +28,7 @@ import { BRICK_BG, ICON_SIZE } from './constants';
 import { useDesktop } from './useDesktop';
 import ArcadeHitEffect from './ArcadeHitEffect';
 import NeonAmbiance from './NeonAmbiance';
+import ArcadeLogo from './ArcadeLogo';
 import './Desktop.css';
 
 function DesktopStats({ portfolioData }: { portfolioData: PortfolioData }) {
@@ -177,13 +176,6 @@ export default function Desktop({
       title: 'Education',
     },
     {
-      id: 'journal',
-      label: 'Journal',
-      icon: <Feather size={ICON_SIZE} />,
-      content: <JournalWindow />,
-      title: 'Journal',
-    },
-    {
       id: 'contact',
       label: 'Contact',
       icon: <Mail size={ICON_SIZE} />,
@@ -234,6 +226,18 @@ export default function Desktop({
       className="w-screen h-screen flex flex-col relative overflow-hidden bg-[#060412]"
       style={{ backgroundImage: BRICK_BG, backgroundSize: '120px 60px' }}
     >
+      {/* Mobile block overlay — shown only on screens < 425px */}
+      <div
+        className="mobile-block"
+        style={{ backgroundImage: BRICK_BG, backgroundSize: '120px 60px', backgroundColor: '#060412' }}
+      >
+        <img
+          src="/led-mobile-not-provided-transparent.png"
+          alt="Mobile version not provided"
+          style={{ width: 'min(90vw, 360px)', pointerEvents: 'none' }}
+        />
+      </div>
+      <div className="desktop-content contents">
       <Menubar openCount={windows.length} onCloseAll={handleCloseAll} />
 
       <div className="flex-1 relative">
@@ -288,6 +292,8 @@ export default function Desktop({
           ref={bottomIconRef}
           className={`absolute bottom-0 right-4 z-[1] flex-col items-center ${isSmallMobile ? 'hidden' : 'flex'}`}
         >
+          <ArcadeLogo />
+
           {/* Neon title */}
           <div
             className="text-center select-none cursor-pointer mb-2"
@@ -423,6 +429,7 @@ export default function Desktop({
             </>
           );
         })()}
+      </div>
       </div>
     </div>
   );

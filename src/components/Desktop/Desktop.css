@@ -96,6 +96,26 @@
   100% { text-shadow: 0 0 4px #fff, 0 0 12px rgba(0,230,255,0.9); transform: scale(1); }
 }
 
+/* ── Mobile block ───────────────────────────────────────────────────── */
+.mobile-block {
+  display: none;
+}
+
+@media (max-width: 424px) {
+  .mobile-block {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .desktop-content {
+    display: none !important;
+  }
+}
+
 /* ── Spotlight search ───────────────────────────────────────────────── */
 @keyframes spotlightIn {
   from { opacity: 0; transform: translateX(-50%) scale(0.96) translateY(-10px); }

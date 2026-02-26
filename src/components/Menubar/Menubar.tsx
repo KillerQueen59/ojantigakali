@@ -1,16 +1,16 @@
 'use client';
 
 import { LogOut, LayoutDashboard, User2, X } from 'lucide-react';
+import Image from 'next/image';
 import { useMenubar } from './useMenubar';
 import Button from '@/components/ui/Button';
 
 interface MenubarProps {
-  hideHome?: boolean;
   openCount?: number;
   onCloseAll?: () => void;
 }
 
-export default function Menubar({ hideHome, openCount = 0, onCloseAll }: MenubarProps) {
+export default function Menubar({ openCount = 0, onCloseAll }: MenubarProps) {
   const { action, state } = useMenubar();
 
   const { time, dropdownOpen, form, error, dropdownRef, user, router } = state;
@@ -20,11 +20,10 @@ export default function Menubar({ hideHome, openCount = 0, onCloseAll }: Menubar
   return (
     <div className="relative flex items-center justify-between select-none px-4 py-2 bg-[var(--menubar-bg)] text-[var(--menubar-text)]">
       <div className="flex items-center gap-2">
-        {!hideHome && (
-          <Button variant="secondary" size="sm" tactile={false}>
-            Home
-          </Button>
-        )}
+        <div className="flex items-center gap-1.5">
+          <Image src="/ojantigakali-animated-round.gif" alt="ojantigakali" width={24} height={24} className="rounded-full" />
+          <span className="text-xs font-bold opacity-90">Ojantigakali&apos;s Arcade</span>
+        </div>
         {openCount > 0 && (
           <Button
             variant="secondary"
