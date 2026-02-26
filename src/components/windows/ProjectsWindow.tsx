@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ArrowLeft, ExternalLink, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import ReactCountryFlag from 'react-country-flag'
+import NextImage from 'next/image'
 import { Icon } from '@/utils/iconMap'
 import ImagePreview from '@/components/ui/ImagePreview'
 import type { Project } from '@/types/portfolio'
@@ -23,6 +24,9 @@ export default function ProjectsWindow({ data }: { data: Project[] | null | unde
   const [selected, setSelected]         = useState<Project | null>(null)
   const [imgIndex, setImgIndex]         = useState(0)
   const [previewOpen, setPreviewOpen]   = useState(false)
+  const [imgLoaded, setImgLoaded]       = useState(false)
+
+  useEffect(() => { setImgLoaded(false) }, [selected, imgIndex])
 
   const allSkills = useMemo(
     () => Array.from(new Set(projects.flatMap((p) => p.stack))),
@@ -107,12 +111,19 @@ export default function ProjectsWindow({ data }: { data: Project[] | null | unde
         {images.length > 0 && (
           <div>
             <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--window-text-muted)', marginBottom: 10 }}>Screenshots</p>
-            <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', background: 'var(--window-titlebar)', border: '1px solid var(--window-titlebar-border)', cursor: 'zoom-in' }}
+            <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', background: 'var(--window-titlebar)', border: '1px solid var(--window-titlebar-border)', cursor: 'zoom-in', minHeight: 160 }}
               onClick={() => setPreviewOpen(true)}>
-              <img
+              {!imgLoaded && (
+                <div className="img-skeleton" style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
+              )}
+              <NextImage
                 src={images[imgIndex]}
                 alt={`${selected.name} screenshot ${imgIndex + 1}`}
-                style={{ width: '100%', display: 'block', objectFit: 'cover', maxHeight: 280 }}
+                width={800}
+                height={500}
+                quality={85}
+                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', maxHeight: 280, opacity: imgLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
+                onLoad={() => setImgLoaded(true)}
               />
               {/* Zoom hint */}
               <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.55)', borderRadius: 6, padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4, color: '#b8e8ff', fontSize: 11, pointerEvents: 'none' }}>

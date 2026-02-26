@@ -1,10 +1,11 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
 
 export default function ArcadeLogo() {
   const logoRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const handleMouseEnter = () => {
     gsap.to(logoRef.current, {
@@ -27,28 +28,58 @@ export default function ArcadeLogo() {
   const handleClick = () => {
     const el = logoRef.current;
     gsap.killTweensOf(el);
-    gsap.timeline()
+    gsap
+      .timeline()
       .to(el, { scale: 0.85, rotation: -15, duration: 0.08, ease: 'power2.in' })
-      .to(el, { scale: 1.3,  rotation: 20,  duration: 0.15, ease: 'power3.out' })
-      .to(el, { scale: 1.1,  rotation: -10, duration: 0.12, ease: 'power2.inOut' })
-      .to(el, { scale: 1,    rotation: 0,   duration: 0.4,  ease: 'elastic.out(1, 0.4)' });
+      .to(el, { scale: 1.3, rotation: 20, duration: 0.15, ease: 'power3.out' })
+      .to(el, {
+        scale: 1.1,
+        rotation: -10,
+        duration: 0.12,
+        ease: 'power2.inOut',
+      })
+      .to(el, {
+        scale: 1,
+        rotation: 0,
+        duration: 0.4,
+        ease: 'elastic.out(1, 0.4)',
+      });
   };
 
+  const logoSize = 'clamp(160px, 20vw, 260px)';
+
   return (
-    <img
-      ref={logoRef}
-      src="/ojantigakali-animated-transparent.png"
-      alt="Ojantigakali's Arcade"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+    <div
       style={{
-        width: 'clamp(160px, 20vw, 260px)',
-        cursor: 'pointer',
-        userSelect: 'none',
+        width: logoSize,
+        aspectRatio: '1 / 1',
+        position: 'relative',
         marginBottom: 4,
-        transformOrigin: 'center center',
       }}
-    />
+    >
+      {!loaded && (
+        <div
+          className="img-skeleton"
+          style={{ position: 'absolute', inset: 0, borderRadius: '50%' }}
+        />
+      )}
+      <img
+        ref={logoRef}
+        src="/ojantigakali-animated-transparent.png"
+        alt="Ojantigakali's Arcade"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+        onLoad={() => setLoaded(true)}
+        style={{
+          width: '100%',
+          cursor: 'pointer',
+          userSelect: 'none',
+          transformOrigin: 'center center',
+          opacity: loaded ? 1 : 0,
+          transition: 'opacity 0.4s ease',
+        }}
+      />
+    </div>
   );
 }

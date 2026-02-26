@@ -33,15 +33,18 @@ import './Desktop.css';
 
 function DesktopStats({ portfolioData }: { portfolioData: PortfolioData }) {
   const experienceStart = new Date('2021-11-01');
-  const yearsExp = Math.floor((Date.now() - experienceStart.getTime()) / (1000 * 60 * 60 * 24 * 365));
+  const yearsExp = Math.floor(
+    (Date.now() - experienceStart.getTime()) / (1000 * 60 * 60 * 24 * 365)
+  );
 
   const totalProjects = portfolioData.projects.length;
 
-  const totalTechs = new Set(portfolioData.projects.flatMap((p) => p.stack)).size;
+  const totalTechs = new Set(portfolioData.projects.flatMap((p) => p.stack))
+    .size;
 
   const stats = [
     { value: `${yearsExp}+`, label: 'Years Exp.' },
-    { value: totalProjects,  label: 'Projects' },
+    { value: totalProjects, label: 'Projects' },
     { value: `${totalTechs}+`, label: 'Tech Stacks' },
   ];
 
@@ -51,7 +54,14 @@ function DesktopStats({ portfolioData }: { portfolioData: PortfolioData }) {
       style={{ pointerEvents: 'none' }}
     >
       {stats.map(({ value, label }, i) => (
-        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: i < stats.length - 1 ? 0 : undefined }}>
+        <div
+          key={label}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: i < stats.length - 1 ? 0 : undefined,
+          }}
+        >
           <div
             className="flex flex-col items-center justify-center"
             style={{
@@ -229,7 +239,11 @@ export default function Desktop({
       {/* Mobile block overlay — shown only on screens < 425px */}
       <div
         className="mobile-block"
-        style={{ backgroundImage: BRICK_BG, backgroundSize: '120px 60px', backgroundColor: '#060412' }}
+        style={{
+          backgroundImage: BRICK_BG,
+          backgroundSize: '120px 60px',
+          backgroundColor: '#060412',
+        }}
       >
         <img
           src="/led-mobile-not-provided-transparent.png"
@@ -238,198 +252,199 @@ export default function Desktop({
         />
       </div>
       <div className="desktop-content contents">
-      <Menubar openCount={windows.length} onCloseAll={handleCloseAll} />
+        <Menubar openCount={windows.length} onCloseAll={handleCloseAll} />
 
-      <div className="flex-1 relative">
-        <div className="absolute inset-0 z-0" onClick={handleBgClick} />
+        <div className="flex-1 relative">
+          <div className="absolute inset-0 z-0" onClick={handleBgClick} />
 
-        {hits.map((h) => (
-          <ArcadeHitEffect key={h.id} h={h} />
-        ))}
-
-        <NeonAmbiance />
-
-        <div
-          ref={leftColRef}
-          className="absolute top-3 left-4 flex flex-col gap-4 z-[1]"
-        >
-          {LEFT_ICONS.map((icon) => (
-            <DesktopIcon
-              key={icon.id}
-              id={icon.id}
-              label={icon.label}
-              icon={icon.icon}
-              accentColor={icon.accentColor}
-              isActive={isOpen(icon.id)}
-              onClick={() => openIcon(icon.id)}
-            />
+          {hits.map((h) => (
+            <ArcadeHitEffect key={h.id} h={h} />
           ))}
-        </div>
 
-        {/* Right icon column */}
-        <div
-          ref={rightColRef}
-          className="absolute top-3 right-4 flex flex-col gap-4 items-center z-[1]"
-        >
-          {RIGHT_ICONS.map((icon) => (
-            <DesktopIcon
-              key={icon.id}
-              id={icon.id}
-              label={icon.label}
-              icon={icon.icon}
-              accentColor={icon.accentColor}
-              isActive={isOpen(icon.id)}
-              onClick={() => openIcon(icon.id)}
-            />
-          ))}
-        </div>
+          <NeonAmbiance />
 
-        {/* Stats widget */}
-        {p && <DesktopStats portfolioData={p} />}
-
-        {/* Arcade group */}
-        <div
-          ref={bottomIconRef}
-          className={`absolute bottom-0 right-4 z-[1] flex-col items-center ${isSmallMobile ? 'hidden' : 'flex'}`}
-        >
-          <ArcadeLogo />
-
-          {/* Neon title */}
           <div
-            className="text-center select-none cursor-pointer mb-2"
-            onClick={() => {
-              setClickedTitle(true);
-              setTimeout(() => setClickedTitle(false), 700);
-            }}
-            onMouseEnter={() => setHoveredTitle(true)}
-            onMouseLeave={() => setHoveredTitle(false)}
+            ref={leftColRef}
+            className="absolute top-3 left-4 flex flex-col gap-4 z-[1]"
           >
-            <div
-              className="text-[#b0eaff] leading-[1.8] tracking-[0.05em]"
-              style={{
-                fontFamily: 'var(--font-press-start), monospace',
-                fontSize: 'clamp(9px, 1.2vw, 16px)',
-                animation: clickedTitle
-                  ? 'neonTitleClick 0.7s ease-out forwards'
-                  : hoveredTitle
-                    ? 'neonTitleHover 1.2s ease-in-out infinite'
-                    : 'neonTitle 3s ease-in-out infinite, neonTitleFlicker 8s step-end infinite 4s',
-              }}
-            >
-              Ojantigakali&apos;s
-            </div>
-            <div
-              className="text-[#c8f0ff] tracking-[0.1em]"
-              style={{
-                fontFamily: 'var(--font-press-start), monospace',
-                fontSize: 'clamp(13px, 1.8vw, 24px)',
-                animation: clickedTitle
-                  ? 'neonTitleClick 0.7s ease-out forwards'
-                  : hoveredTitle
-                    ? 'neonTitleHover 1.2s ease-in-out infinite 0.1s'
-                    : 'neonTitle 3s ease-in-out infinite 0.5s, neonTitleFlicker 8s step-end infinite 4.2s',
-              }}
-            >
-              ARCADE
-            </div>
-          </div>
-
-          {/* Cabinet row */}
-          <div className="flex items-end">
-            {[0, 1, 2].map((idx) => (
-              <div
-                key={idx}
-                className="relative cursor-pointer"
-                style={{
-                  marginLeft: idx === 0 ? 0 : 'clamp(-100px, -7.5vw, -200px)',
-                  zIndex: idx + 1,
-                  transition: 'transform 0.2s ease',
-                  transform:
-                    hoveredCabinet === idx && litCabinet !== idx
-                      ? 'scale(1.06) translateY(-8px)'
-                      : 'scale(1) translateY(0)',
-                }}
-                onClick={() => {
-                  setLitCabinet(idx);
-                  setTimeout(() => setLitCabinet(null), 700);
-                }}
-                onMouseEnter={() => setHoveredCabinet(idx)}
-                onMouseLeave={() => setHoveredCabinet(null)}
-              >
-                <img
-                  src="/arcade.svg"
-                  alt="Arcade"
-                  className="block"
-                  style={{
-                    width: 'clamp(180px, 20vw, 280px)',
-                    animation:
-                      litCabinet === idx
-                        ? 'arcadeHit 0.7s ease-out forwards'
-                        : hoveredCabinet === idx
-                          ? 'arcadeHover 1.4s ease-in-out infinite'
-                          : undefined,
-                    filter:
-                      litCabinet === idx || hoveredCabinet === idx
-                        ? undefined
-                        : 'drop-shadow(0 0 6px rgba(0,200,255,0.2))',
-                  }}
-                />
-              </div>
+            {LEFT_ICONS.map((icon) => (
+              <DesktopIcon
+                key={icon.id}
+                id={icon.id}
+                label={icon.label}
+                icon={icon.icon}
+                accentColor={icon.accentColor}
+                isActive={isOpen(icon.id)}
+                onClick={() => openIcon(icon.id)}
+              />
             ))}
           </div>
-        </div>
 
-        {/* Open windows */}
-        {windows
-          .filter((win) => win.id !== 'search')
-          .map((win, idx) => {
-            const def = allIcons.find((ic) => ic.id === win.id);
-            if (!def) return null;
-            return (
-              <WindowModal
-                key={win.id}
-                id={win.id}
-                title={def.title}
-                icon={def.icon}
-                position={win.position}
-                zIndex={win.zIndex}
-                originRect={win.originRect}
-                forceClose={closingAll}
-                forceCloseDelay={idx * 55}
-                onClose={() => closeWindow(win.id)}
-                onFocus={() => bringToFront(win.id)}
-                onMove={(pos) => updatePosition(win.id, pos)}
-              >
-                {def.content}
-              </WindowModal>
-            );
-          })}
-
-        {/* Spotlight search */}
-        {(() => {
-          const win = windows.find((w) => w.id === 'search');
-          const def = allIcons.find((ic) => ic.id === 'search');
-          if (!win || !def) return null;
-          return (
-            <>
-              <div
-                className="fixed inset-0"
-                style={{ zIndex: win.zIndex - 1 }}
-                onClick={() => closeWindow('search')}
+          {/* Right icon column */}
+          <div
+            ref={rightColRef}
+            className="absolute top-3 right-4 flex flex-col gap-4 items-center z-[1]"
+          >
+            {RIGHT_ICONS.map((icon) => (
+              <DesktopIcon
+                key={icon.id}
+                id={icon.id}
+                label={icon.label}
+                icon={icon.icon}
+                accentColor={icon.accentColor}
+                isActive={isOpen(icon.id)}
+                onClick={() => openIcon(icon.id)}
               />
+            ))}
+          </div>
+
+          {/* Stats widget */}
+          {p && <DesktopStats portfolioData={p} />}
+
+          {/* Arcade group */}
+          <div
+            ref={bottomIconRef}
+            className={`absolute bottom-0 right-4 z-[1] flex-col items-center ${isSmallMobile ? 'hidden' : 'flex'}`}
+          >
+            <ArcadeLogo />
+
+            {/* Neon title */}
+            <div
+              className="text-center select-none cursor-pointer mb-2"
+              onClick={() => {
+                setClickedTitle(true);
+                setTimeout(() => setClickedTitle(false), 700);
+              }}
+              onMouseEnter={() => setHoveredTitle(true)}
+              onMouseLeave={() => setHoveredTitle(false)}
+            >
               <div
-                className="fixed top-[14%] left-1/2 -translate-x-1/2 w-[540px] max-w-[calc(100vw-32px)] rounded-[14px] p-5 bg-[var(--window-bg)] border border-[var(--window-titlebar-border)] shadow-[0_24px_80px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.1)]"
+                className="text-[#b0eaff] leading-[1.8] tracking-[0.05em]"
                 style={{
-                  zIndex: win.zIndex,
-                  animation: 'spotlightIn 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+                  fontFamily: 'var(--font-press-start), monospace',
+                  fontSize: 'clamp(9px, 1.2vw, 16px)',
+                  animation: clickedTitle
+                    ? 'neonTitleClick 0.7s ease-out forwards'
+                    : hoveredTitle
+                      ? 'neonTitleHover 1.2s ease-in-out infinite'
+                      : 'neonTitle 3s ease-in-out infinite, neonTitleFlicker 8s step-end infinite 4s',
                 }}
               >
-                {def.content}
+                Ojantigakali&apos;s
               </div>
-            </>
-          );
-        })()}
-      </div>
+              <div
+                className="text-[#c8f0ff] tracking-[0.1em]"
+                style={{
+                  fontFamily: 'var(--font-press-start), monospace',
+                  fontSize: 'clamp(13px, 1.8vw, 24px)',
+                  animation: clickedTitle
+                    ? 'neonTitleClick 0.7s ease-out forwards'
+                    : hoveredTitle
+                      ? 'neonTitleHover 1.2s ease-in-out infinite 0.1s'
+                      : 'neonTitle 3s ease-in-out infinite 0.5s, neonTitleFlicker 8s step-end infinite 4.2s',
+                }}
+              >
+                ARCADE
+              </div>
+            </div>
+
+            {/* Cabinet row */}
+            <div className="flex items-end">
+              {[0, 1, 2].map((idx) => (
+                <div
+                  key={idx}
+                  className="relative cursor-pointer"
+                  style={{
+                    marginLeft: idx === 0 ? 0 : 'clamp(-100px, -7.5vw, -200px)',
+                    zIndex: idx + 1,
+                    transition: 'transform 0.2s ease',
+                    transform:
+                      hoveredCabinet === idx && litCabinet !== idx
+                        ? 'scale(1.06) translateY(-8px)'
+                        : 'scale(1) translateY(0)',
+                  }}
+                  onClick={() => {
+                    setLitCabinet(idx);
+                    setTimeout(() => setLitCabinet(null), 700);
+                  }}
+                  onMouseEnter={() => setHoveredCabinet(idx)}
+                  onMouseLeave={() => setHoveredCabinet(null)}
+                >
+                  <img
+                    src="/arcade.svg"
+                    alt="Arcade"
+                    className="block"
+                    style={{
+                      width: 'clamp(180px, 20vw, 280px)',
+                      animation:
+                        litCabinet === idx
+                          ? 'arcadeHit 0.7s ease-out forwards'
+                          : hoveredCabinet === idx
+                            ? 'arcadeHover 1.4s ease-in-out infinite'
+                            : undefined,
+                      filter:
+                        litCabinet === idx || hoveredCabinet === idx
+                          ? undefined
+                          : 'drop-shadow(0 0 6px rgba(0,200,255,0.2))',
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Open windows */}
+          {windows
+            .filter((win) => win.id !== 'search')
+            .map((win, idx) => {
+              const def = allIcons.find((ic) => ic.id === win.id);
+              if (!def) return null;
+              return (
+                <WindowModal
+                  key={win.id}
+                  id={win.id}
+                  title={def.title}
+                  icon={def.icon}
+                  position={win.position}
+                  zIndex={win.zIndex}
+                  originRect={win.originRect}
+                  forceClose={closingAll}
+                  forceCloseDelay={idx * 55}
+                  onClose={() => closeWindow(win.id)}
+                  onFocus={() => bringToFront(win.id)}
+                  onMove={(pos) => updatePosition(win.id, pos)}
+                >
+                  {def.content}
+                </WindowModal>
+              );
+            })}
+
+          {/* Spotlight search */}
+          {(() => {
+            const win = windows.find((w) => w.id === 'search');
+            const def = allIcons.find((ic) => ic.id === 'search');
+            if (!win || !def) return null;
+            return (
+              <>
+                <div
+                  className="fixed inset-0"
+                  style={{ zIndex: win.zIndex - 1 }}
+                  onClick={() => closeWindow('search')}
+                />
+                <div
+                  className="fixed top-[14%] left-1/2 -translate-x-1/2 w-[540px] max-w-[calc(100vw-32px)] rounded-[14px] p-5 bg-[var(--window-bg)] border border-[var(--window-titlebar-border)] shadow-[0_24px_80px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.1)]"
+                  style={{
+                    zIndex: win.zIndex,
+                    animation:
+                      'spotlightIn 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+                  }}
+                >
+                  {def.content}
+                </div>
+              </>
+            );
+          })()}
+        </div>
       </div>
     </div>
   );

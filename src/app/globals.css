@@ -114,6 +114,22 @@
   pointer-events: none;
 }
 
+/* ─── Image skeleton shimmer ────────────────────────────────────────── */
+@keyframes img-skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+.img-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--window-titlebar) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--window-titlebar) 75%
+  );
+  background-size: 1200px 100%;
+  animation: img-skeleton-shimmer 1.4s infinite linear;
+}
+
 /* ─── Degree-ring CSS spin (not needle — GSAP handles needle) ─────── */
 @keyframes spin-degree-ring {
   from {

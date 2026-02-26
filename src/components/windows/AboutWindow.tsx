@@ -16,6 +16,7 @@ export default function AboutWindow({
   const bio = data?.bio ?? '';
   const facts = data?.facts ?? [];
   const [preview, setPreview] = useState(false);
+  const [photoLoaded, setPhotoLoaded] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,13 +39,17 @@ export default function AboutWindow({
           }}
           onClick={() => setPreview(true)}
         >
+          {!photoLoaded && (
+            <div className="img-skeleton absolute inset-0 z-[1]" />
+          )}
           <Image
             src="/ojan.jpg"
             alt={name}
             width={120}
             height={150}
             className="w-full h-full object-cover"
-            style={{ objectPosition: '50% 10%' }}
+            style={{ objectPosition: '50% 10%', opacity: photoLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
+            onLoad={() => setPhotoLoaded(true)}
           />
           <div
             className="absolute inset-0 mix-blend-overlay pointer-events-none"

@@ -17,6 +17,7 @@ export default function ImagePreview({ src, images, initialIndex = 0, alt = '', 
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(initialIndex);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const gallery = images ?? (src ? [src] : []);
   const hasMany = gallery.length > 1;
@@ -25,6 +26,7 @@ export default function ImagePreview({ src, images, initialIndex = 0, alt = '', 
   const next = useCallback(() => setIndex(i => (i + 1) % gallery.length), [gallery.length]);
 
   useEffect(() => { setMounted(true) }, []);
+  useEffect(() => { setImgLoaded(false) }, [index]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -71,8 +73,11 @@ export default function ImagePreview({ src, images, initialIndex = 0, alt = '', 
         style={{ animation: `${closing ? 'previewImageOut' : 'previewImageIn'} 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards` }}
       >
         <div className="relative pointer-events-auto rounded-2xl overflow-hidden max-w-[90vw] max-h-[90vh]"
-          style={{ boxShadow: '0 0 0 1.5px rgba(0,210,255,0.4), 0 0 60px rgba(0,180,255,0.2), 0 32px 80px rgba(0,0,0,0.8)' }}
+          style={{ boxShadow: '0 0 0 1.5px rgba(0,210,255,0.4), 0 0 60px rgba(0,180,255,0.2), 0 32px 80px rgba(0,0,0,0.8)', minWidth: 200, minHeight: 150 }}
         >
+          {!imgLoaded && (
+            <div className="img-skeleton absolute inset-0 z-[1] rounded-2xl" />
+          )}
           <Image
             key={gallery[index]}
             src={gallery[index]}
@@ -80,6 +85,8 @@ export default function ImagePreview({ src, images, initialIndex = 0, alt = '', 
             width={1200}
             height={900}
             className="block max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain"
+            style={{ opacity: imgLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
+            onLoad={() => setImgLoaded(true)}
           />
           {/* Neon tone overlay */}
           <div
