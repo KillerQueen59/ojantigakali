@@ -1,11 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 
 export default function ArcadeLogo() {
   const logoRef = useRef<HTMLImageElement>(null);
-  const [loaded, setLoaded] = useState(false);
 
   const handleMouseEnter = () => {
     gsap.to(logoRef.current, {
@@ -57,12 +56,6 @@ export default function ArcadeLogo() {
         marginBottom: 4,
       }}
     >
-      {!loaded && (
-        <div
-          className="img-skeleton"
-          style={{ position: 'absolute', inset: 0, borderRadius: '50%' }}
-        />
-      )}
       <img
         ref={logoRef}
         src="/ojantigakali-animated-transparent.png"
@@ -70,14 +63,11 @@ export default function ArcadeLogo() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
-        onLoad={() => setLoaded(true)}
         style={{
           width: '100%',
           cursor: 'pointer',
           userSelect: 'none',
           transformOrigin: 'center center',
-          opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.4s ease',
         }}
       />
     </div>
