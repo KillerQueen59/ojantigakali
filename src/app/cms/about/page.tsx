@@ -1,11 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import staticData from '@/data/portfolio';
 import SaveButton from '@/components/cms/SaveButton';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiRequest } from '@/lib/api';
+
+const API_URL = process.env.NEXT_PUBLIC_JOURNAL_API_URL ?? '';
 
 export default function CmsAboutPage() {
+  const { user } = useAuth();
   const [data, setData] = useState(staticData.about);
+
+  useEffect(() => {
+    if (!API_URL) return;
+    fetch(`${API_URL}/sections/about`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d) setData(d);
+      })
+      .catch(() => {});
+  }, []);
 
   const setFact = (i: number, key: keyof (typeof data.facts)[0], val: string) =>
     setData((d) => {
@@ -13,6 +28,13 @@ export default function CmsAboutPage() {
       facts[i] = { ...facts[i], [key]: val };
       return { ...d, facts };
     });
+
+  const handleSave = async () => {
+    await apiRequest(user!.apiKey, '/sections/about', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  };
 
   return (
     <div
@@ -74,14 +96,14 @@ export default function CmsAboutPage() {
               key={i}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '48px 1fr 2fr',
+                gridTemplateColumns: '120px 1fr 2fr',
                 gap: 8,
               }}
             >
               <Input
-                value={fact.emoji ?? ''}
-                onChange={(v) => setFact(i, 'emoji', v)}
-                placeholder="emoji"
+                value={fact.icon ?? ''}
+                onChange={(v) => setFact(i, 'icon', v)}
+                placeholder="icon name"
               />
               <Input
                 value={fact.key}
@@ -98,7 +120,7 @@ export default function CmsAboutPage() {
         </div>
       </Section>
 
-      <SaveButton />
+      <SaveButton onSave={handleSave} />
     </div>
   );
 }

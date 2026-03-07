@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   User,
   Briefcase,
@@ -144,6 +144,21 @@ export default function Desktop({
 
   const [closingAll, setClosingAll] = useState(false);
 
+  // Redirect to mobile site on small screens
+  useEffect(() => {
+    const MOBILE_URL = 'https://m.ojantigakali.com';
+    const mq = window.matchMedia('(max-width: 455px)');
+    if (mq.matches) {
+      window.location.replace(MOBILE_URL);
+      return;
+    }
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) window.location.replace(MOBILE_URL);
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const handleCloseAll = () => {
     if (windows.length === 0 || closingAll) return;
     setClosingAll(true);
@@ -236,7 +251,7 @@ export default function Desktop({
       className="w-screen h-screen flex flex-col relative overflow-hidden bg-[#060412]"
       style={{ backgroundImage: BRICK_BG, backgroundSize: '120px 60px' }}
     >
-      {/* Mobile block overlay — shown only on screens < 425px */}
+      {/* Mobile redirect overlay — shown on screens < 456px */}
       <div
         className="mobile-block"
         style={{
@@ -247,9 +262,37 @@ export default function Desktop({
       >
         <img
           src="/led-mobile-not-provided-transparent.png"
-          alt="Mobile version not provided"
-          style={{ width: 'min(90vw, 360px)', pointerEvents: 'none' }}
+          alt="Mobile version"
+          style={{ width: 'min(90vw, 280px)', pointerEvents: 'none' }}
         />
+        <a
+          href="https://m.ojantigakali.com"
+          style={{
+            fontFamily: 'var(--font-press-start), monospace',
+            fontSize: 'clamp(8px, 2.5vw, 11px)',
+            color: '#00d2ff',
+            textDecoration: 'none',
+            border: '2px solid #00d2ff',
+            borderRadius: 8,
+            padding: '12px 20px',
+            letterSpacing: '0.08em',
+            textShadow: '0 0 10px rgba(0,210,255,0.8)',
+            boxShadow: '0 0 16px rgba(0,210,255,0.3)',
+            animation: 'neonTitle 2s ease-in-out infinite',
+          }}
+        >
+          PLAY MOBILE VERSION
+        </a>
+        <span
+          style={{
+            fontFamily: 'var(--font-press-start), monospace',
+            fontSize: 9,
+            color: 'rgba(176,234,255,0.35)',
+            letterSpacing: '0.06em',
+          }}
+        >
+          m.ojantigakali.com
+        </span>
       </div>
       <div className="desktop-content contents">
         <Menubar openCount={windows.length} onCloseAll={handleCloseAll} />
@@ -444,6 +487,45 @@ export default function Desktop({
               </>
             );
           })()}
+
+          {/* Mobile version toggle */}
+          <a
+            href="https://m.ojantigakali.com"
+            className="mobile-toggle-btn"
+            style={{
+              position: 'fixed',
+              bottom: 16,
+              left: 16,
+              zIndex: 9999,
+              fontFamily: 'var(--font-press-start), monospace',
+              fontSize: 8,
+              color: '#00d2ff',
+              background: 'rgba(6,4,18,0.9)',
+              border: '1px solid rgba(0,210,255,0.4)',
+              borderRadius: 6,
+              padding: '10px 14px',
+              textDecoration: 'none',
+              letterSpacing: '0.06em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 0 12px rgba(0,210,255,0.2)',
+              transition: 'box-shadow 0.2s, transform 0.2s, border-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0,210,255,0.5)';
+              e.currentTarget.style.borderColor = 'rgba(0,210,255,0.8)';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 12px rgba(0,210,255,0.2)';
+              e.currentTarget.style.borderColor = 'rgba(0,210,255,0.4)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span style={{ fontSize: 12 }}>📱</span>
+            MOBILE VERSION
+          </a>
         </div>
       </div>
     </div>

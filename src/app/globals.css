@@ -148,6 +148,12 @@
   }
 }
 
+/* ─── Visitor pulse dot ─────────────────────────────────────────────── */
+@keyframes visitorPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
 /* ─── Tooltip on icon label ─────────────────────────────────────────── */
 @keyframes icon-label-in {
   from {
