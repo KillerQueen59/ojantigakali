@@ -1,105 +1,213 @@
 /* ── Visitor dot pulse ──────────────────────────────────────────────── */
 @keyframes visitorPulse {
-  0%, 100% { opacity: 1;   transform: scale(1);    }
-  50%      { opacity: 0.6; transform: scale(0.85); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
 }
 
 /* ── Arcade hit effects ─────────────────────────────────────────────── */
 @keyframes brickHit {
-  0%   { transform: translate(-50%, -50%) scale(0.1); opacity: 1; }
-  50%  { opacity: 0.85; }
-  100% { transform: translate(-50%, -50%) scale(1);   opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }
 @keyframes scoreFloat {
-  0%   { transform: translate(-50%, -50%)  scale(0.5); opacity: 1; }
-  15%  { transform: translate(-50%, -70%)  scale(1.2); }
-  100% { transform: translate(-50%, -180%) scale(0.9); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  15% {
+    transform: translate(-50%, -70%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -180%) scale(0.9);
+    opacity: 0;
+  }
 }
 @keyframes sparkFly {
-  0%   { opacity: 1; transform: translate(0, 0) scale(1.2); }
-  60%  { opacity: 0.8; }
-  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.2);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0);
+  }
 }
 
 /* ── Neon ambient glow pulses ───────────────────────────────────────── */
 @keyframes neonCyan {
-  0%, 100% { opacity: 0.55; transform: scale(1);    }
-  50%      { opacity: 0.85; transform: scale(1.08); }
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
 }
 @keyframes neonMagenta {
-  0%, 100% { opacity: 0.45; transform: scale(1);    }
-  50%      { opacity: 0.75; transform: scale(1.06); }
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.06);
+  }
 }
 @keyframes neonPurple {
-  0%, 100% { opacity: 0.35; transform: scale(1);   }
-  50%      { opacity: 0.65; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.1);
+  }
 }
 @keyframes neonGreen {
-  0%, 100% { opacity: 0.30; transform: scale(1);    }
-  50%      { opacity: 0.55; transform: scale(1.07); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.07);
+  }
 }
 
 /* ── Arcade cabinet ─────────────────────────────────────────────────── */
 @keyframes arcadeHover {
-  0%, 100% { filter: brightness(1.3) drop-shadow(0 0 10px rgba(0,220,255,0.6)) drop-shadow(0 0 24px rgba(0,180,255,0.4)); }
-  50%      { filter: brightness(1.5) drop-shadow(0 0 18px rgba(0,230,255,0.9)) drop-shadow(0 0 40px rgba(120,0,255,0.5)); }
+  0%,
+  100% {
+    filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 220, 255, 0.6))
+      drop-shadow(0 0 24px rgba(0, 180, 255, 0.4));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 18px rgba(0, 230, 255, 0.9))
+      drop-shadow(0 0 40px rgba(120, 0, 255, 0.5));
+  }
 }
 @keyframes arcadeHit {
-  0%   { transform: scale(1)    translateY(0);    filter: brightness(1) drop-shadow(0 0 0px transparent); }
-  15%  { transform: scale(1.06) translateY(-8px); filter: brightness(3) drop-shadow(0 0 24px rgba(0,230,255,1)) drop-shadow(0 0 48px rgba(180,0,255,0.8)); }
-  40%  { transform: scale(1.03) translateY(-4px); filter: brightness(2) drop-shadow(0 0 16px rgba(0,200,255,0.8)); }
-  100% { transform: scale(1)    translateY(0);    filter: brightness(1) drop-shadow(0 0 0px transparent); }
+  0% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1) drop-shadow(0 0 0px transparent);
+  }
+  15% {
+    transform: scale(1.06) translateY(-8px);
+    filter: brightness(3) drop-shadow(0 0 24px rgba(0, 230, 255, 1))
+      drop-shadow(0 0 48px rgba(180, 0, 255, 0.8));
+  }
+  40% {
+    transform: scale(1.03) translateY(-4px);
+    filter: brightness(2) drop-shadow(0 0 16px rgba(0, 200, 255, 0.8));
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1) drop-shadow(0 0 0px transparent);
+  }
 }
 
 /* ── Neon title ─────────────────────────────────────────────────────── */
 @keyframes neonTitle {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow:
       0 0 4px #fff,
-      0 0 12px rgba(0,230,255,0.9),
-      0 0 30px rgba(0,200,255,0.7),
-      0 0 60px rgba(0,180,255,0.5),
-      0 0 100px rgba(0,150,255,0.3);
+      0 0 12px rgba(0, 230, 255, 0.9),
+      0 0 30px rgba(0, 200, 255, 0.7),
+      0 0 60px rgba(0, 180, 255, 0.5),
+      0 0 100px rgba(0, 150, 255, 0.3);
   }
   50% {
     text-shadow:
       0 0 8px #fff,
-      0 0 24px rgba(0,230,255,1),
-      0 0 60px rgba(0,200,255,0.9),
-      0 0 100px rgba(0,180,255,0.7),
-      0 0 160px rgba(0,150,255,0.5);
+      0 0 24px rgba(0, 230, 255, 1),
+      0 0 60px rgba(0, 200, 255, 0.9),
+      0 0 100px rgba(0, 180, 255, 0.7),
+      0 0 160px rgba(0, 150, 255, 0.5);
   }
 }
 @keyframes neonTitleFlicker {
-  0%, 18%, 20%, 22%, 55%, 57%, 100% {
+  0%,
+  18%,
+  20%,
+  22%,
+  55%,
+  57%,
+  100% {
     text-shadow:
       0 0 4px #fff,
-      0 0 12px rgba(0,230,255,0.9),
-      0 0 30px rgba(0,200,255,0.7),
-      0 0 60px rgba(0,180,255,0.5);
+      0 0 12px rgba(0, 230, 255, 0.9),
+      0 0 30px rgba(0, 200, 255, 0.7),
+      0 0 60px rgba(0, 180, 255, 0.5);
   }
-  19%, 56% { text-shadow: none; opacity: 0.85; }
+  19%,
+  56% {
+    text-shadow: none;
+    opacity: 0.85;
+  }
 }
 @keyframes neonTitleHover {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow:
       0 0 6px #fff,
-      0 0 20px rgba(0,230,255,1),
-      0 0 50px rgba(0,200,255,0.9),
-      0 0 90px rgba(120,0,255,0.6);
+      0 0 20px rgba(0, 230, 255, 1),
+      0 0 50px rgba(0, 200, 255, 0.9),
+      0 0 90px rgba(120, 0, 255, 0.6);
   }
   50% {
     text-shadow:
       0 0 12px #fff,
-      0 0 36px rgba(0,230,255,1),
-      0 0 80px rgba(0,200,255,1),
-      0 0 140px rgba(180,0,255,0.8);
+      0 0 36px rgba(0, 230, 255, 1),
+      0 0 80px rgba(0, 200, 255, 1),
+      0 0 140px rgba(180, 0, 255, 0.8);
   }
 }
 @keyframes neonTitleClick {
-  0%   { text-shadow: 0 0 4px #fff, 0 0 12px rgba(0,230,255,0.9); transform: scale(1); }
-  12%  { text-shadow: 0 0 24px #fff, 0 0 60px rgba(255,255,255,1), 0 0 100px rgba(0,230,255,1), 0 0 140px rgba(255,0,255,0.9); transform: scale(1.08); }
-  100% { text-shadow: 0 0 4px #fff, 0 0 12px rgba(0,230,255,0.9); transform: scale(1); }
+  0% {
+    text-shadow:
+      0 0 4px #fff,
+      0 0 12px rgba(0, 230, 255, 0.9);
+    transform: scale(1);
+  }
+  12% {
+    text-shadow:
+      0 0 24px #fff,
+      0 0 60px rgba(255, 255, 255, 1),
+      0 0 100px rgba(0, 230, 255, 1),
+      0 0 140px rgba(255, 0, 255, 0.9);
+    transform: scale(1.08);
+  }
+  100% {
+    text-shadow:
+      0 0 4px #fff,
+      0 0 12px rgba(0, 230, 255, 0.9);
+    transform: scale(1);
+  }
 }
 
 /* ── Mobile redirect overlay (screens < 456px) ──────────────────────── */
@@ -128,8 +236,83 @@
   }
 }
 
+/* ── Showcase wall frame ────────────────────────────────────────────── */
+@keyframes frameSway {
+  0%,
+  100% {
+    transform: rotate(-0.6deg) translateY(0);
+  }
+  50% {
+    transform: rotate(0.6deg) translateY(-1px);
+  }
+}
+
+@keyframes frameKnocked {
+  0% {
+    transform: rotate(0deg) translateY(0px);
+  }
+  7% {
+    transform: rotate(-6deg) translateY(-5px);
+  }
+  18% {
+    transform: rotate(22deg) translateY(-8px);
+  }
+  30% {
+    transform: rotate(-14deg) translateY(-5px);
+  }
+  42% {
+    transform: rotate(18deg) translateY(-3px);
+  }
+  53% {
+    transform: rotate(-10deg) translateY(-1px);
+  }
+  63% {
+    transform: rotate(13deg) translateY(0px);
+  }
+  73% {
+    transform: rotate(-6deg) translateY(0px);
+  }
+  82% {
+    transform: rotate(9deg) translateY(0px);
+  }
+  91% {
+    transform: rotate(3deg) translateY(0px);
+  }
+  100% {
+    transform: rotate(5deg) translateY(0px);
+  }
+}
+
+@keyframes frameReset {
+  0% {
+    transform: rotate(5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-1deg) translateY(0);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
+.showcase-frame-idle {
+  animation: frameSway 3.5s ease-in-out infinite;
+}
+.showcase-frame-knocked {
+  animation: frameKnocked 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+.showcase-frame-resetting {
+  animation: frameReset 0.35s ease-out forwards;
+}
+
 /* ── Spotlight search ───────────────────────────────────────────────── */
 @keyframes spotlightIn {
-  from { opacity: 0; transform: translateX(-50%) scale(0.96) translateY(-10px); }
-  to   { opacity: 1; transform: translateX(-50%) scale(1)    translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.96) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
 }
