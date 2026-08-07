@@ -4,7 +4,8 @@ import { CATALOG } from '../../data/cards'
 import { WINDOW_CONTENT } from '../../data/content'
 import { POI_POS, SECTIONS, ZONES } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
-import DesktopScene from '../art/DesktopScene'
+import SceneBackground from '../art/SceneBackground'
+import SceneProps from '../art/SceneProps'
 import Meter from '../Meter'
 
 const title = 'var(--farm-font-title)'
@@ -138,31 +139,32 @@ function ContentWindow() {
 export default function DesktopValley() {
   const scaleD = useFarm((s) => s.scaleD)
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        display: 'grid',
-        placeItems: 'center',
-        // Sky→hills→grass, horizon at ~38% to match the scene, so the letterbox
-        // area reads as open sky and field instead of an empty gap.
-        background:
-          'linear-gradient(#7FBFE6 0%, #7FBFE6 24%, #93CBEC 30%, #AFDBF3 36%, #6FAE4E 37.8%, #5A9E3D 40%, #5A9E3D 100%)',
-      }}
-    >
-      <div style={{ width: 1440 * scaleD, height: 900 * scaleD }}>
-        <div style={{ position: 'relative', width: 1440, height: 900, transform: `scale(${scaleD})`, transformOrigin: 'top left' }}>
-          <DesktopScene style={{ position: 'absolute', inset: 0, width: 1440, height: 900 }} />
-          {ZONES.map((z) => (
-            <ZonePlaque key={z.id} zone={z} />
-          ))}
-          {SECTIONS.filter((s) => s.id).map((s) => (
-            <Poi key={s.id} id={s.id!} />
-          ))}
-          <StatusHud />
-          <Hotbar />
-        </div>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#7FBFE6' }}>
+      {/* The scene is one centered, contain-scaled 1440×900 canvas. The background
+          layer shares this transform (so the horizon stays locked to the props) but
+          its sky/grass bands extend far past the frame to fill the letterbox — no
+          gap at any zoom, nothing cropped. */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: 1440,
+          height: 900,
+          transform: `translate(-50%, -50%) scale(${scaleD})`,
+          transformOrigin: 'center',
+        }}
+      >
+        <SceneBackground />
+        <SceneProps />
+        {ZONES.map((z) => (
+          <ZonePlaque key={z.id} zone={z} />
+        ))}
+        {SECTIONS.filter((s) => s.id).map((s) => (
+          <Poi key={s.id} id={s.id!} />
+        ))}
+        <StatusHud />
+        <Hotbar />
       </div>
       <ContentWindow />
     </div>

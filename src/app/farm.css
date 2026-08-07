@@ -120,6 +120,27 @@
   100% { transform: translate(0, 0); }
 }
 
+/* Virtual-pet (Talk Tom / Pou-style) motion */
+@keyframes farm-petWalk {
+  0%, 100% { transform: translateY(0) rotate(-2.5deg); }
+  50% { transform: translateY(-2px) rotate(2.5deg); }
+}
+@keyframes farm-petIdle {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-1px) scaleY(1.03); }
+}
+@keyframes farm-petHop {
+  0% { transform: translateY(0) scale(1, 1); }
+  30% { transform: translateY(-18px) scale(0.9, 1.12); }
+  60% { transform: translateY(0) scale(1.12, 0.88); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes farm-heartFloat {
+  0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(-50%, -44px) scale(1.1); opacity: 0; }
+}
+
 /* Bottom-nav (hotbar) + tile hover. transform/filter aren't set inline, so these
    win without !important; disabled under prefers-reduced-motion below. */
 .farm-hotbar-slot {
