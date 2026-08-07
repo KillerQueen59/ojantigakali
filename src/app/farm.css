@@ -156,6 +156,40 @@
   filter: brightness(1.12);
 }
 
+/* Hover tooltip (hotbar slots). Hidden until the slot is hovered. */
+.farm-tip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 8px;
+  transform: translate(-50%, 4px);
+  background: #4a2f18;
+  color: #f6e7c5;
+  font-family: var(--farm-font-title);
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 9px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 6;
+}
+.farm-hotbar-slot:hover .farm-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* App-grid / dock tile hover (mobile) */
+.farm-tile {
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.farm-tile:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

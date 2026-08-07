@@ -6,7 +6,16 @@ import { POI_POS, SECTIONS, ZONES } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
 import SceneBackground from '../art/SceneBackground'
 import SceneProps from '../art/SceneProps'
+import DesktopPet from './DesktopPet'
 import Meter from '../Meter'
+
+// One roaming critter per zone, each bounded to its patch of the 1440×900 scene.
+const DESKTOP_PETS = [
+  { zone: 'crop' as const, minX: 300, maxX: 500, groundY: 830, pxSpeed: 0.011 },
+  { zone: 'barn' as const, minX: 560, maxX: 780, groundY: 800, pxSpeed: 0.017 },
+  { zone: 'coop' as const, minX: 950, maxX: 1170, groundY: 812, pxSpeed: 0.011 },
+  { zone: 'orchard' as const, minX: 840, maxX: 986, minY: 270, maxY: 430, pxSpeed: 0.009 },
+]
 
 const title = 'var(--farm-font-title)'
 const mono = 'var(--farm-font-mono)'
@@ -107,6 +116,7 @@ function Hotbar() {
           >
             <span style={{ position: 'absolute', top: 2, left: 4, fontFamily: title, fontSize: 11, color: active ? '#F2C14E' : '#D9C49A' }}>{i + 1}</span>
             <Icon href={s.icon} size={36} />
+            <span className="farm-tip">{s.label}</span>
           </button>
         )
       })}
@@ -157,6 +167,9 @@ export default function DesktopValley() {
       >
         <SceneBackground />
         <SceneProps />
+        {DESKTOP_PETS.map((p) => (
+          <DesktopPet key={p.zone} {...p} />
+        ))}
         {ZONES.map((z) => (
           <ZonePlaque key={z.id} zone={z} />
         ))}
