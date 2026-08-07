@@ -34,6 +34,10 @@ export type FarmState = {
   showShare: boolean
   toastMsg: string
   toastOn: boolean
+  // Bumps on every successful +1 tend so pets/particles can react.
+  tendTick: number
+  tendZone: ZoneId | null
+  tendKind: 'water' | 'feed' | null
 }
 
 const STORAGE_KEY = 'ojan-farm-proto'
@@ -79,8 +83,13 @@ function initialState(): FarmState {
     showShare: false,
     toastMsg: '',
     toastOn: false,
+    tendTick: 0,
+    tendZone: null,
+    tendKind: null,
   }
 }
+
+const WATER_ZONES: ZoneId[] = ['crop', 'orchard']
 
 let state: FarmState = initialState()
 const listeners = new Set<() => void>()
@@ -128,6 +137,9 @@ export const farmActions = {
       meters,
       tended: { ...state.tended, [zoneId]: true },
       helped: state.helped + 1,
+      tendTick: state.tendTick + 1,
+      tendZone: zoneId,
+      tendKind: WATER_ZONES.includes(zoneId) ? 'water' : 'feed',
     })
     saveShared(meters, state.inventory)
     toast('+1 · THANKS, STRANGER!')

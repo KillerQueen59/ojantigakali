@@ -146,6 +146,28 @@
   70%, 100% { transform: translateY(0); }
 }
 
+/* Tend feedback — water droplets fall, feed specks toss up, meter/button react. */
+@keyframes farm-dropDown {
+  0% { transform: translate(-50%, -14px) scale(1); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(-50%, 20px) scale(0.7); opacity: 0; }
+}
+@keyframes farm-tossUp {
+  0% { transform: translate(-50%, 4px) scale(0.6); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(-50%, -26px) scale(1); opacity: 0; }
+}
+@keyframes farm-tendPulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes farm-actionPress {
+  0% { transform: scale(1); }
+  45% { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+
 /* Bottom-nav (hotbar) + tile hover. transform/filter aren't set inline, so these
    win without !important; disabled under prefers-reduced-motion below. */
 .farm-hotbar-slot {
@@ -188,6 +210,17 @@
 .farm-tile:hover {
   transform: translateY(-3px);
   filter: brightness(1.1);
+}
+
+/* Tactile press on the water/feed action buttons */
+.farm-action {
+  transition: transform 0.08s ease, filter 0.08s ease;
+}
+.farm-action:hover {
+  filter: brightness(1.06);
+}
+.farm-action:active {
+  transform: scale(0.93);
 }
 
 @media (prefers-reduced-motion: reduce) {

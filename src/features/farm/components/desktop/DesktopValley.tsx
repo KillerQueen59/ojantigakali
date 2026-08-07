@@ -8,6 +8,7 @@ import SceneBackground from '../art/SceneBackground'
 import SceneProps from '../art/SceneProps'
 import DesktopPet from './DesktopPet'
 import Meter from '../Meter'
+import TendBurst, { useZoneTend } from '../TendBurst'
 
 // One roaming critter per zone, each bounded to its patch of the 1440×900 scene.
 const DESKTOP_PETS = [
@@ -53,6 +54,7 @@ function Poi({ id }: { id: Exclude<(typeof SECTIONS)[number]['id'], null> }) {
 function ZonePlaque({ zone }: { zone: (typeof ZONES)[number] }) {
   const value = useFarm((s) => s.meters[zone.id])
   const tended = useFarm((s) => !!s.tended[zone.id])
+  const pulse = useZoneTend(zone.id)
   const full = value >= 50
   const chipBg = full ? '#F2C14E' : tended ? '#D9C49A' : zone.chip
   const chipFg = full || tended ? '#3B2A1A' : '#FFF'
@@ -61,21 +63,23 @@ function ZonePlaque({ zone }: { zone: (typeof ZONES)[number] }) {
     <div
       style={{ position: 'absolute', top: zone.top, left: zone.left, width: zone.w, background: '#8B5A2B', padding: 4, boxShadow: full ? '0 0 0 3px #F2C14E, 3px 3px 0 rgba(0,0,0,.35)' : '3px 3px 0 rgba(0,0,0,.35), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18' }}
     >
-      <div style={{ background: '#F6E7C5', padding: '10px 12px', boxShadow: 'inset 0 0 0 2px #D9C49A' }}>
+      <div style={{ position: 'relative', background: '#F6E7C5', padding: '10px 12px', boxShadow: 'inset 0 0 0 2px #D9C49A' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
           <span style={{ fontFamily: title, fontSize: 18, color: '#3B2A1A' }}>{zone.name}</span>
           <span style={{ fontFamily: mono, fontSize: 12, color: '#6E4523' }}>{value}/50</span>
         </div>
-        <div style={{ margin: '8px 0' }}>
+        <div key={pulse} style={{ margin: '8px 0', transformOrigin: 'left center', animation: pulse ? 'farm-tendPulse .32s ease-out' : undefined }}>
           <Meter value={value} color={full ? '#F2C14E' : zone.chip} />
         </div>
         <button
           type="button"
+          className="farm-action"
           onClick={() => farmActions.tend(zone.id, zone.name)}
           style={{ display: 'inline-flex', alignItems: 'center', border: 0, cursor: 'pointer', background: chipBg, color: chipFg, fontFamily: title, fontSize: 15, padding: '4px 10px', whiteSpace: 'nowrap', boxShadow: '2px 2px 0 rgba(0,0,0,.3)', animation: full ? 'farm-bob 1s ease-in-out infinite' : undefined }}
         >
           {chipLabel}
         </button>
+        <TendBurst zone={zone.id} />
       </div>
     </div>
   )
