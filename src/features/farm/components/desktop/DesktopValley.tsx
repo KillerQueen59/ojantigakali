@@ -100,6 +100,7 @@ function Hotbar() {
           <button
             key={i}
             type="button"
+            className="farm-hotbar-slot"
             onClick={() => (locked ? farmActions.lockedToast() : farmActions.toggleWin(s.id!))}
             style={{ position: 'relative', width: 62, height: 62, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: active ? '#7A4E28' : locked ? '#5E3D1F' : '#6E4523', opacity: locked ? 0.75 : 1, boxShadow: active ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}
           >
@@ -137,7 +138,19 @@ function ContentWindow() {
 export default function DesktopValley() {
   const scaleD = useFarm((s) => s.scaleD)
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#7FBFE6', display: 'grid', placeItems: 'center' }}>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        display: 'grid',
+        placeItems: 'center',
+        // Sky→hills→grass, horizon at ~38% to match the scene, so the letterbox
+        // area reads as open sky and field instead of an empty gap.
+        background:
+          'linear-gradient(#7FBFE6 0%, #7FBFE6 24%, #93CBEC 30%, #AFDBF3 36%, #6FAE4E 37.8%, #5A9E3D 40%, #5A9E3D 100%)',
+      }}
+    >
       <div style={{ width: 1440 * scaleD, height: 900 * scaleD }}>
         <div style={{ position: 'relative', width: 1440, height: 900, transform: `scale(${scaleD})`, transformOrigin: 'top left' }}>
           <DesktopScene style={{ position: 'absolute', inset: 0, width: 1440, height: 900 }} />

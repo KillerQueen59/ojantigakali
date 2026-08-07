@@ -103,6 +103,33 @@
   100% { transform: translateX(0); }
 }
 
+/* Mobile scene motion */
+@keyframes farm-cloudDriftM {
+  from { transform: translateX(-90px); }
+  to { transform: translateX(470px); }
+}
+@keyframes farm-sunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.09); opacity: 1; }
+}
+@keyframes farm-flutter {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(7px, -6px); }
+  50% { transform: translate(14px, 0); }
+  75% { transform: translate(7px, 6px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Bottom-nav (hotbar) + tile hover. transform/filter aren't set inline, so these
+   win without !important; disabled under prefers-reduced-motion below. */
+.farm-hotbar-slot {
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.farm-hotbar-slot:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

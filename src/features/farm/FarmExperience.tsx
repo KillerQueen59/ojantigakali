@@ -13,10 +13,11 @@ import { farmActions } from './state/farmStore'
  */
 export default function FarmExperience() {
   useEffect(() => {
+    // Contain-fit the fixed 1440×900 canvas to the limiting axis (fills that axis
+    // edge-to-edge at any browser zoom). The other axis's leftover is filled by the
+    // sky→grass gradient behind the scene, so there's no empty gap.
     const onResize = () =>
-      farmActions.setScaleD(
-        Math.min(1, (window.innerWidth - 48) / 1440, (window.innerHeight - 110) / 900),
-      )
+      farmActions.setScaleD(Math.min(window.innerWidth / 1440, window.innerHeight / 900))
     onResize()
     window.addEventListener('resize', onResize)
     const clock = setInterval(() => onResize(), 30000)
