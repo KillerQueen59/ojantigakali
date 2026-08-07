@@ -1,0 +1,24 @@
+// AUTO-GENERATED from the farm prototype symbol sheet. Do not hand-edit.
+// Hidden SVG so <use href="#p-*"> resolves anywhere on the page.
+const INNER = `<defs>
+<symbol id="p-portrait" viewBox="0 0 32 32"><rect x="1" y="1" width="30" height="30" fill="#B8802F"></rect><rect x="3" y="3" width="26" height="26" fill="#F2C14E"></rect><rect x="6" y="6" width="20" height="20" fill="#F6E7C5"></rect><rect x="11" y="8" width="10" height="4" fill="#4A2F18"></rect><rect x="10" y="11" width="12" height="7" fill="#E8B88A"></rect><rect x="12" y="13" width="2" height="2" fill="#3B2A1A"></rect><rect x="18" y="13" width="2" height="2" fill="#3B2A1A"></rect><rect x="9" y="19" width="14" height="7" fill="#5A9E3D"></rect><rect x="13" y="19" width="6" height="2" fill="#F6E7C5"></rect></symbol>
+<symbol id="p-pickaxe" viewBox="0 0 32 32"><rect x="14" y="9" width="4" height="20" fill="#8B5A2B" transform="rotate(35 16 19)"></rect><rect x="14" y="9" width="2" height="20" fill="#A9713C" transform="rotate(35 16 19)"></rect><rect x="5" y="6" width="22" height="5" fill="#9AA3AD"></rect><rect x="3" y="9" width="5" height="4" fill="#9AA3AD"></rect><rect x="24" y="9" width="5" height="4" fill="#9AA3AD"></rect><rect x="6" y="6" width="20" height="2" fill="#C6CDD4"></rect></symbol>
+<symbol id="p-chest" viewBox="0 0 32 32"><rect x="3" y="8" width="26" height="18" fill="#8B5A2B"></rect><rect x="3" y="5" width="26" height="7" fill="#A9713C"></rect><rect x="4" y="6" width="24" height="1" fill="#C68B54"></rect><rect x="3" y="12" width="26" height="3" fill="#4A2F18"></rect><rect x="6" y="5" width="3" height="21" fill="#7A828B"></rect><rect x="23" y="5" width="3" height="21" fill="#7A828B"></rect><rect x="13" y="11" width="6" height="8" fill="#F2C14E"></rect><rect x="15" y="14" width="2" height="3" fill="#8A5A00"></rect></symbol>
+<symbol id="p-book" viewBox="0 0 32 32"><rect x="4" y="4" width="22" height="24" fill="#3E6FA8"></rect><rect x="4" y="4" width="6" height="24" fill="#2A4E7A"></rect><rect x="26" y="5" width="3" height="22" fill="#F6E7C5"></rect><rect x="20" y="4" width="3" height="8" fill="#C0392B"></rect><rect x="12" y="11" width="11" height="2" fill="#F6E7C5"></rect><rect x="12" y="16" width="11" height="2" fill="#F6E7C5"></rect><rect x="12" y="21" width="7" height="2" fill="#F6E7C5"></rect></symbol>
+<symbol id="p-mailbox" viewBox="0 0 32 32"><rect x="14" y="19" width="5" height="11" fill="#6E4523"></rect><rect x="14" y="19" width="2" height="11" fill="#8B5A2B"></rect><rect x="5" y="7" width="22" height="12" fill="#9AA3AD"></rect><rect x="5" y="7" width="22" height="4" fill="#7A828B"></rect><rect x="6" y="12" width="20" height="1" fill="#C6CDD4"></rect><rect x="23" y="13" width="4" height="4" fill="#3B3F45"></rect><rect x="25" y="1" width="3" height="8" fill="#C0392B"></rect><rect x="25" y="1" width="6" height="3" fill="#C0392B"></rect></symbol>
+<symbol id="p-signpost" viewBox="0 0 32 32"><rect x="14" y="4" width="5" height="25" fill="#6E4523"></rect><rect x="14" y="4" width="2" height="25" fill="#8B5A2B"></rect><rect x="3" y="6" width="22" height="7" fill="#A9713C"></rect><rect x="25" y="6" width="4" height="7" fill="#8B5A2B"></rect><rect x="5" y="8" width="18" height="1" fill="#8B5A2B"></rect><rect x="7" y="16" width="22" height="7" fill="#A9713C"></rect><rect x="3" y="16" width="4" height="7" fill="#8B5A2B"></rect><rect x="9" y="18" width="18" height="1" fill="#8B5A2B"></rect></symbol>
+<symbol id="p-scroll" viewBox="0 0 32 32"><rect x="8" y="5" width="16" height="22" fill="#F6E7C5"></rect><rect x="8" y="5" width="3" height="22" fill="#EDE0BE"></rect><rect x="5" y="2" width="22" height="5" fill="#D9C49A"></rect><rect x="4" y="2" width="3" height="5" fill="#B8925E"></rect><rect x="25" y="2" width="3" height="5" fill="#B8925E"></rect><rect x="5" y="25" width="22" height="5" fill="#D9C49A"></rect><rect x="4" y="25" width="3" height="5" fill="#B8925E"></rect><rect x="25" y="25" width="3" height="5" fill="#B8925E"></rect><rect x="12" y="11" width="9" height="2" fill="#8B5A2B"></rect><rect x="12" y="16" width="9" height="2" fill="#8B5A2B"></rect><rect x="12" y="21" width="6" height="2" fill="#8B5A2B"></rect></symbol>
+<symbol id="p-lock" viewBox="0 0 32 32"><rect x="10" y="4" width="12" height="3" fill="#9AA3AD"></rect><rect x="10" y="4" width="3" height="10" fill="#9AA3AD"></rect><rect x="19" y="4" width="3" height="10" fill="#9AA3AD"></rect><rect x="7" y="13" width="18" height="14" fill="#7A828B"></rect><rect x="8" y="14" width="16" height="2" fill="#99A1AA"></rect><rect x="14" y="17" width="4" height="4" fill="#3B3F45"></rect><rect x="15" y="21" width="2" height="3" fill="#3B3F45"></rect></symbol>
+</defs>`
+
+export default function IconSymbols() {
+  return (
+    <svg
+      width={0}
+      height={0}
+      aria-hidden="true"
+      style={{ position: 'absolute' }}
+      dangerouslySetInnerHTML={{ __html: INNER }}
+    />
+  )
+}

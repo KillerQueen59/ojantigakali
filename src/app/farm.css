@@ -1,0 +1,111 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Farm theme — design tokens + animations
+   Source of truth: design_handoff_ojan_farm_portfolio (Stardew Farm Portfolio).
+   Radius is 0 everywhere (pixel aesthetic); exceptions are the phone frame (28px)
+   and dots/badges (50%), applied locally.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Wood */
+  --farm-wood: #8b5a2b;
+  --farm-wood-light: #a9713c;
+  --farm-wood-lighter: #c68b54;
+  --farm-wood-slot: #6e4523;
+  --farm-wood-slot-active: #7a4e28;
+  --farm-wood-locked: #5e3d1f;
+  --farm-wood-dark: #4a2f18;
+
+  /* Parchment / ink */
+  --farm-parchment: #f6e7c5;
+  --farm-parchment-edge: #d9c49a;
+  --farm-parchment-empty: #e5d3a8;
+  --farm-ink: #3b2a1a;
+  --farm-ink-soft: #6e4523;
+  --farm-ink-brand: #8b5a2b;
+
+  /* Accents */
+  --farm-gold: #f2c14e;
+  --farm-gold-light: #f8d77e;
+  --farm-gold-dark: #b8802f;
+  --farm-water: #3e6fa8;
+  --farm-alert: #c0392b;
+  --farm-dirt: #c9a46a;
+
+  /* Nature */
+  --farm-grass: #5a9e3d;
+  --farm-grass-dark: #3e7229;
+  --farm-grass-light: #74b854;
+  --farm-hill: #6fae4e;
+  --farm-hill-far: #88bc72;
+  --farm-sky: #7fbfe6;
+  --farm-sky-mid: #93cbec;
+  --farm-sky-low: #afdbf3;
+  --farm-pond: #4fa3d1;
+  --farm-barn-red: #a03d2b;
+  --farm-barn-red-dark: #8a3324;
+  --farm-trim: #e9e2d0;
+
+  /* Shadows (pixel drop-shadows + bevels) */
+  --farm-shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  --farm-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+  --farm-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.45);
+  --farm-shadow-xl: 8px 8px 0 rgba(0, 0, 0, 0.45);
+  --farm-bevel-out: inset 2px 2px 0 #a9713c, inset -2px -2px 0 #4a2f18;
+  --farm-bevel-in: inset 2px 2px 0 #4a2f18, inset -2px -2px 0 #a9713c;
+  --farm-parchment-inset: inset 0 0 0 2px #d9c49a;
+  --farm-active-ring: inset 0 0 0 3px #f2c14e;
+  --farm-meter-cell: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+
+  /* Font stacks (variables injected by next/font in layout.tsx) */
+  --farm-font-title: var(--font-pixelify), 'Pixelify Sans', cursive;
+  --farm-font-body: var(--font-nunito), 'Nunito', sans-serif;
+  --farm-font-mono: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+}
+
+/* ─── Keyframes (verbatim from the prototype) ──────────────────────────── */
+@keyframes farm-cloudDrift {
+  from { transform: translateX(-220px); }
+  to { transform: translateX(1660px); }
+}
+@keyframes farm-sway {
+  0%, 100% { transform: skewX(0deg); }
+  50% { transform: skewX(6deg); }
+}
+@keyframes farm-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes farm-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.06); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes farm-toastUp {
+  0% { transform: translate(-50%, 10px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+@keyframes farm-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes farm-smokeUp {
+  0% { transform: translateY(0); opacity: 0.7; }
+  100% { transform: translateY(-46px); opacity: 0; }
+}
+@keyframes farm-shimmer {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.7; }
+}
+@keyframes farm-chickenWalk {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(120px); }
+  50% { transform: translateX(120px) scaleX(-1); }
+  95% { transform: translateX(0) scaleX(-1); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
