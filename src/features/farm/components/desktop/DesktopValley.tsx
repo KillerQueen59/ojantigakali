@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { WINDOW_CONTENT } from '../../data/content'
 import { PET_META, PET_ORDER, PETS } from '../../data/pets'
-import { POI_POS, SECTIONS, ZONES, type Zone } from '../../data/zones'
+import { SECTIONS, ZONES, type Zone } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
 import SceneBackground from '../art/SceneBackground'
 import SceneProps from '../art/SceneProps'
@@ -53,30 +53,6 @@ function FillBackdrop() {
       <div style={{ position: 'absolute', top: horizon, left: 0, right: 0, bottom: 0, background: '#5A9E3D' }} />
       <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: sceneRight, background: '#4FA3D1' }} />
     </div>
-  )
-}
-
-function Poi({ id }: { id: Exclude<(typeof SECTIONS)[number]['id'], null> }) {
-  const active = useFarm((s) => s.win === id)
-  const section = SECTIONS.find((s) => s.id === id)!
-  const [top, left] = POI_POS[id]
-  return (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.stopPropagation()
-        farmActions.toggleWin(id)
-      }}
-      style={{ position: 'absolute', top, left, zIndex: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, border: 0, background: 'transparent', cursor: 'pointer', padding: 0 }}
-    >
-      <span style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#4A2F18', padding: '5px 11px', boxShadow: active ? '3px 3px 0 rgba(0,0,0,.35), inset 0 0 0 2px #F2C14E' : '3px 3px 0 rgba(0,0,0,.35)' }}>
-        <Icon href={section.icon} size={18} />
-        <span style={{ fontFamily: title, fontSize: 15, color: '#F6E7C5', whiteSpace: 'nowrap' }}>
-          {section.label}
-        </span>
-      </span>
-      <span style={{ color: '#4A2F18', fontSize: 13, lineHeight: 1, animation: 'farm-bob 1.4s ease-in-out infinite' }}>▼</span>
-    </button>
   )
 }
 
@@ -377,12 +353,6 @@ export default function DesktopValley() {
         {ZONES.map((z) => (
           <ZoneHotspot key={z.id} zone={z} />
         ))}
-        {/* Portfolio POIs fade out while a section is focused. */}
-        <div style={{ opacity: focusZone ? 0 : 1, pointerEvents: focusZone ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
-          {SECTIONS.filter((s) => s.id).map((s) => (
-            <Poi key={s.id} id={s.id!} />
-          ))}
-        </div>
       </div>
       <StatusHud />
       <Hotbar />
