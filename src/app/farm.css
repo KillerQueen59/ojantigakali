@@ -223,6 +223,31 @@
   transform: scale(0.93);
 }
 
+/* Section hotspots — fences are permanent; hovering a section lifts a name/progress
+   sign + a soft highlight, and clicking zooms the camera in (transform inline). */
+@keyframes farm-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.farm-hotspot .farm-hotspot-hi {
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+.farm-hotspot .farm-hotspot-sign {
+  opacity: 0;
+  transform: translate(-50%, calc(-100% + 6px));
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.farm-hotspot:hover .farm-hotspot-hi,
+.farm-hotspot:focus-visible .farm-hotspot-hi {
+  opacity: 1;
+}
+.farm-hotspot:hover .farm-hotspot-sign,
+.farm-hotspot:focus-visible .farm-hotspot-sign {
+  opacity: 1;
+  transform: translate(-50%, -100%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

@@ -30,23 +30,35 @@ export const POI_POS: Record<SectionId, [number, number]> = {
   resume: [330, 1128],
 }
 
+/** Interactive region over a section's art on the 1440×900 desktop scene. */
+export type ZoneHit = { top: number; left: number; w: number; h: number }
+
+/** A permanent pixel-art fence enclosure on the grass. `openTop` drops the back
+ *  rail so the fence never crosses a structure sitting behind it. */
+export type ZoneFence = { top: number; left: number; w: number; h: number; openTop?: boolean }
+
 export type Zone = {
   id: ZoneId
   name: string
   sub: string
   action: string
   chip: string
-  top: number
-  left: number
-  w: number
+  /** Hover/click hit area drawn over the section's prop art. */
+  hit: ZoneHit
+  /** Permanent fence enclosure for this section. */
+  fence: ZoneFence
+  /** Scene-space point the camera centers on when this section is focused. */
+  focus: [number, number]
+  /** Camera scale applied while this section is focused. */
+  zoom: number
 }
 
 /** Farm zones, in swipe order (mobile farmPage indexes this array). */
 export const ZONES: Zone[] = [
-  { id: 'crop', name: 'CROP FIELD', sub: 'PARSNIPS, BERRIES & MYSTERY SEEDS', action: '💧 POUR WATER', chip: '#3E6FA8', top: 300, left: 196, w: 262 },
-  { id: 'barn', name: 'BARN · DAISY & PIP', sub: 'DAISY THE COW & PIP THE PIG', action: '🌾 FEED HAY', chip: '#B8802F', top: 462, left: 492, w: 276 },
-  { id: 'coop', name: 'COOP · HENS', sub: 'THREE VERY BUSY HENS', action: '🌾 FEED GRAIN', chip: '#B8802F', top: 640, left: 1008, w: 250 },
-  { id: 'orchard', name: 'ORCHARD', sub: 'APPLES & PEACHES', action: '💧 POUR WATER', chip: '#3E6FA8', top: 200, left: 990, w: 230 },
+  { id: 'crop', name: 'CROP FIELD', sub: 'PARSNIPS, BERRIES & MYSTERY SEEDS', action: '💧 POUR WATER', chip: '#3E6FA8', hit: { top: 356, left: 164, w: 320, h: 128 }, fence: { top: 366, left: 160, w: 320, h: 110, openTop: false }, focus: [326, 420], zoom: 1.7 },
+  { id: 'barn', name: 'BARN · DAISY & PIP', sub: 'DAISY THE COW & PIP THE PIG', action: '🌾 FEED HAY', chip: '#B8802F', hit: { top: 458, left: 466, w: 314, h: 250 }, fence: { top: 700, left: 456, w: 340, h: 52, openTop: false }, focus: [624, 588], zoom: 1.5 },
+  { id: 'coop', name: 'COOP · HENS', sub: 'THREE VERY BUSY HENS', action: '🌾 FEED GRAIN', chip: '#B8802F', hit: { top: 500, left: 936, w: 224, h: 196 }, fence: { top: 628, left: 962, w: 204, h: 54, openTop: false }, focus: [1052, 578], zoom: 1.7 },
+  { id: 'orchard', name: 'ORCHARD', sub: 'APPLES & PEACHES', action: '💧 POUR WATER', chip: '#3E6FA8', hit: { top: 296, left: 758, w: 240, h: 200 }, fence: { top: 430, left: 786, w: 184, h: 56, openTop: false }, focus: [876, 344], zoom: 1.7 },
 ]
 
 export const ZONE_ORDER = ['CROP FIELD', 'BARN', 'COOP', 'ORCHARD']

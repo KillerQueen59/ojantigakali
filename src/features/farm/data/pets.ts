@@ -84,6 +84,15 @@ const BUTTERFLY_PAL = { '.': 'transparent', K: '#2b2028', Y: '#f2c14e', O: '#e89
 
 const HEART = { ch: '♥', color: '#e74c3c' }
 
+/** Display order + label for the pet picker (top-left) and status panel. */
+export const PET_ORDER: ZoneId[] = ['crop', 'barn', 'coop', 'orchard']
+export const PET_META: Record<ZoneId, { label: string }> = {
+  crop: { label: 'RABBIT' },
+  barn: { label: 'DAISY THE COW' },
+  coop: { label: 'HEN' },
+  orchard: { label: 'BUTTERFLY' },
+}
+
 /** Which critter tends each place, and how it behaves. */
 export const PETS: Record<ZoneId, Pet> = {
   coop: { rows: CHICKEN, palette: CHICKEN_PAL, pixel: 3, bottom: 7, speed: 0.06, move: 'walk', emotes: [HEART, HEART, { ch: '♪', color: '#3e6fa8' }, { ch: '✦', color: '#f2c14e' }] },

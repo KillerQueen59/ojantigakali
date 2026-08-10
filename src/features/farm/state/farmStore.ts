@@ -27,6 +27,9 @@ export type FarmState = {
   tended: Partial<Record<ZoneId, boolean>>
   helped: number
   win: SectionId | null
+  focusZone: ZoneId | null
+  /** Which critter is currently roaming the valley (only one at a time). */
+  activePet: ZoneId
   mScreen: MobileScreen
   farmPage: number
   harvest: InventoryEntry | null
@@ -76,6 +79,8 @@ function initialState(): FarmState {
     tended: {},
     helped: HELPED_BASE,
     win: null,
+    focusZone: null,
+    activePet: 'crop',
     mScreen: 'home',
     farmPage: 1,
     harvest: null,
@@ -145,13 +150,17 @@ export const farmActions = {
     toast('+1 · THANKS, STRANGER!')
   },
 
+  focusOn: (zoneId: ZoneId) => set({ focusZone: zoneId }),
+  clearFocus: () => set({ focusZone: null }),
+  setPet: (zoneId: ZoneId) => set({ activePet: zoneId }),
+
   toggleWin: (id: SectionId) => set({ win: state.win === id ? null : id }),
   openApp: (id: SectionId) => set({ win: id, mScreen: 'app' }),
   closeWin: () => set({ win: null }),
   lockedToast: () => toast('BLOG — COMING SOON!'),
 
   openFarm: () => set({ mScreen: 'farm' }),
-  goHome: () => set({ mScreen: 'home', win: null }),
+  goHome: () => set({ mScreen: 'home', win: null, focusZone: null }),
   setFarmPage: (farmPage: number) => set({ farmPage }),
   prevPlace: () => set({ farmPage: (state.farmPage + 3) % 4 }),
   nextPlace: () => set({ farmPage: (state.farmPage + 1) % 4 }),
@@ -171,6 +180,7 @@ export const farmActions = {
       tended: {},
       helped: HELPED_BASE,
       win: null,
+      focusZone: null,
       showHarvest: false,
       showShare: false,
     })
