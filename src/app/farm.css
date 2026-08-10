@@ -181,10 +181,10 @@
 /* Hover tooltip (hotbar slots). Hidden until the slot is hovered. */
 .farm-tip {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-bottom: 8px;
-  transform: translate(-50%, 4px);
+  left: 100%;
+  top: 50%;
+  margin-left: 8px;
+  transform: translate(-4px, -50%);
   background: #4a2f18;
   color: #f6e7c5;
   font-family: var(--farm-font-title);
@@ -200,7 +200,7 @@
 }
 .farm-hotbar-slot:hover .farm-tip {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translate(0, -50%);
 }
 
 /* App-grid / dock tile hover (mobile) */

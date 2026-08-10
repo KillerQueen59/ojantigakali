@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { WINDOW_CONTENT } from '../../data/content'
-import { PET_META, PETS } from '../../data/pets'
+import { PET_META, PET_ORDER, PETS } from '../../data/pets'
 import { POI_POS, SECTIONS, ZONES, type Zone } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
 import SceneBackground from '../art/SceneBackground'
@@ -10,7 +10,6 @@ import SceneProps from '../art/SceneProps'
 import Fence from '../Fence'
 import PixelSprite from '../PixelSprite'
 import DesktopPet from './DesktopPet'
-import PetPicker from './PetPicker'
 import Meter from '../Meter'
 import TendBurst, { useZoneTend } from '../TendBurst'
 
@@ -198,11 +197,36 @@ function StatusHud() {
         <div style={{ fontFamily: title, fontSize: 17, color: '#3B2A1A' }}>FARM STATUS</div>
         <div style={{ fontFamily: mono, fontSize: 12, color: '#6E4523', marginTop: 4 }}>{helped} VISITORS HELPED TODAY</div>
         <div style={{ fontFamily: mono, fontSize: 12, color: '#B8802F' }}>{readyLabel}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 8, paddingTop: 8, borderTop: '2px solid #E5D3A8' }}>
-          <span style={{ width: 26, height: 22, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
-            <PixelSprite rows={pet.rows} palette={pet.palette} pixel={2} />
-          </span>
-          <span style={{ fontFamily: mono, fontSize: 11, color: '#6E4523' }}>OUT NOW · {PET_META[activePet].label}</span>
+        {/* Merged critter picker: pick which single critter roams the valley. */}
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '2px solid #E5D3A8' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{ width: 26, height: 22, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+              <PixelSprite rows={pet.rows} palette={pet.palette} pixel={2} />
+            </span>
+            <span style={{ fontFamily: mono, fontSize: 11, color: '#6E4523' }}>OUT NOW · {PET_META[activePet].label}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 5, marginTop: 7 }}>
+            {PET_ORDER.map((zone) => {
+              const on = activePet === zone
+              const p = PETS[zone]
+              return (
+                <button
+                  key={zone}
+                  type="button"
+                  className="farm-tile"
+                  onClick={() => farmActions.setPet(zone)}
+                  title={PET_META[zone].label}
+                  aria-label={PET_META[zone].label}
+                  aria-pressed={on}
+                  style={{ width: 36, height: 36, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: on ? '#7A4E28' : '#6E4523', boxShadow: on ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}
+                >
+                  <span style={{ width: 30, height: 26, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+                    <PixelSprite rows={p.rows} palette={p.palette} pixel={2} />
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
         <button type="button" onClick={farmActions.resetDemo} style={{ marginTop: 8, border: 0, background: 'transparent', cursor: 'pointer', fontFamily: mono, fontSize: 10, color: '#A9713C', padding: 0 }}>
           ↺ RESET DEMO
@@ -216,7 +240,7 @@ function Hotbar() {
   const win = useFarm((s) => s.win)
   const focused = useFarm((s) => s.focusZone !== null)
   return (
-    <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 20, background: '#8B5A2B', padding: 8, display: 'flex', gap: 8, boxShadow: '4px 4px 0 rgba(0,0,0,.35)', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
+    <div style={{ position: 'fixed', top: 20, left: 24, zIndex: 20, background: '#8B5A2B', padding: 8, display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '4px 4px 0 rgba(0,0,0,.35)', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
       {SECTIONS.map((s, i) => {
         const locked = s.id === null
         const active = !locked && win === s.id
@@ -307,7 +331,6 @@ export default function DesktopValley() {
           ))}
         </div>
       </div>
-      <PetPicker />
       <StatusHud />
       <Hotbar />
       <FocusPanel />
