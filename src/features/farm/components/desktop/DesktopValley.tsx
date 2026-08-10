@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { WINDOW_CONTENT } from '../../data/content'
 import { PET_META, PETS } from '../../data/pets'
-import { SECTIONS, ZONES, type Zone } from '../../data/zones'
+import { POI_POS, SECTIONS, ZONES, type Zone } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
-import SceneBackdrop from '../art/SceneBackdrop'
-import ZoneEntity, { ZONE_ART } from '../art/ZoneEntities'
+import SceneBackground from '../art/SceneBackground'
+import SceneProps from '../art/SceneProps'
 import Fence from '../Fence'
 import PixelSprite from '../PixelSprite'
 import DesktopPet from './DesktopPet'
@@ -14,10 +14,7 @@ import PetPicker from './PetPicker'
 import Meter from '../Meter'
 import TendBurst, { useZoneTend } from '../TendBurst'
 
-const SCENE_W = 1440
-const SCENE_H = 900
-
-// Per-zone roaming bounds for the single active critter (scene coords).
+// Per-zone roaming bounds for the single active critter.
 const PET_BOUNDS: Record<Zone['id'], { minX: number; maxX: number; groundY?: number; minY?: number; maxY?: number; pxSpeed: number }> = {
   crop: { minX: 300, maxX: 500, groundY: 830, pxSpeed: 0.011 },
   barn: { minX: 560, maxX: 780, groundY: 800, pxSpeed: 0.017 },
@@ -29,25 +26,9 @@ const title = 'var(--farm-font-title)'
 const mono = 'var(--farm-font-mono)'
 const body = 'var(--farm-font-body)'
 
-/** Cover scale = fill the viewport keeping aspect (same as the backdrop's slice). */
-function useCover() {
-  const [s, setS] = useState(1)
-  useEffect(() => {
-    const on = () => setS(Math.max(window.innerWidth / SCENE_W, window.innerHeight / SCENE_H))
-    on()
-    window.addEventListener('resize', on)
-    return () => window.removeEventListener('resize', on)
-  }, [])
-  return s
-}
-
-/** Map a scene point to a viewport position that tracks the cover backdrop. */
-function place(px: number, py: number, s: number) {
-  return {
-    left: `calc(50% + ${(s * (px - SCENE_W / 2)).toFixed(1)}px)`,
-    top: `calc(50% + ${(s * (py - SCENE_H / 2)).toFixed(1)}px)`,
-  }
-}
+const SCENE_W = 1440
+const SCENE_H = 900
+const HORIZON = 330 // grass line in scene coords
 
 function Icon({ href, size }: { href: string; size: number }) {
   return (
@@ -58,65 +39,83 @@ function Icon({ href, size }: { href: string; size: number }) {
 }
 
 /**
- * A fixed-size farm zone: its structure + fence + click hotspot as one unit, glued
- * to the cover backdrop. Normal → placed at its scene anchor at 1:1 pixel size.
- * Focused → grows to the viewport centre; the others dim out.
+ * Full-viewport stretchable background behind the fixed prop canvas. Sky fills to
+ * the scene horizon, grass below, and the river is continued to the right edge —
+ * split computed from the fit-scale so it lines up with the in-frame background
+ * (no seam) and fills every edge at any window size (no letterbox gap).
  */
-function ZoneGroup({ zone, s, focusedId }: { zone: Zone; s: number; focusedId: Zone['id'] | null }) {
-  const a = ZONE_ART[zone.id]
-  const value = useFarm((st) => st.meters[zone.id])
-  const full = value >= 50
-
-  const gx = Math.min(a.x, zone.fence.left, zone.hit.left)
-  const gy = Math.min(a.y, zone.fence.top, zone.hit.top)
-  const gx1 = Math.max(a.x + a.w, zone.fence.left + zone.fence.w, zone.hit.left + zone.hit.w)
-  const gy1 = Math.max(a.y + a.h, zone.fence.top + zone.fence.h, zone.hit.top + zone.hit.h)
-  const gw = gx1 - gx
-  const gh = gy1 - gy
-
-  const isFocus = focusedId === zone.id
-  const dim = focusedId !== null && !isFocus
-  const scale = isFocus ? zone.zoom : 1
-  const pos = isFocus ? { left: '50%', top: '48%' } : place(gx + gw / 2, gy + gh / 2, s)
-
+function FillBackdrop() {
+  const scaleD = useFarm((s) => s.scaleD)
+  const horizon = `calc(50% + ${(scaleD * (HORIZON - SCENE_H / 2)).toFixed(1)}px)`
+  const sceneRight = `calc(50% + ${(scaleD * (SCENE_W / 2)).toFixed(1)}px)`
   return (
-    <div
-      style={{
-        position: 'absolute',
-        ...pos,
-        width: gw,
-        height: gh,
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        transformOrigin: 'center',
-        zIndex: isFocus ? 31 : 2,
-        opacity: dim ? 0 : 1,
-        pointerEvents: dim ? 'none' : 'auto',
-        transition: 'left .55s cubic-bezier(.22,.61,.36,1), top .55s cubic-bezier(.22,.61,.36,1), transform .55s cubic-bezier(.22,.61,.36,1), opacity .3s ease',
-      }}
-    >
-      <div style={{ position: 'absolute', left: a.x - gx, top: a.y - gy }}>
-        <ZoneEntity id={zone.id} />
-      </div>
-      <div style={{ position: 'absolute', left: zone.fence.left - gx, top: zone.fence.top - gy, width: zone.fence.w, height: zone.fence.h }}>
-        <Fence w={zone.fence.w} h={zone.fence.h} openTop={zone.fence.openTop ?? true} />
-      </div>
-      {/* hotspot — click to focus; hidden once anything is focused */}
-      <button
-        type="button"
-        className="farm-hotspot"
-        onClick={() => farmActions.focusOn(zone.id)}
-        aria-label={`Focus ${zone.name}`}
-        style={{ position: 'absolute', left: zone.hit.left - gx, top: zone.hit.top - gy, width: zone.hit.w, height: zone.hit.h, border: 0, background: 'transparent', padding: 0, cursor: 'pointer', opacity: focusedId ? 0 : 1, pointerEvents: focusedId ? 'none' : 'auto', transition: 'opacity .3s ease' }}
-      >
-        <span className="farm-hotspot-hi" style={{ position: 'absolute', inset: 0, background: 'rgba(242,193,78,.14)', boxShadow: 'inset 0 0 0 2px rgba(242,193,78,.5)' }} />
-        <span className="farm-hotspot-sign" style={{ position: 'absolute', top: -8, left: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: '#4A2F18', padding: '6px 12px', boxShadow: '3px 3px 0 rgba(0,0,0,.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
-          <span style={{ fontFamily: title, fontSize: 16, color: '#F6E7C5' }}>{zone.name}</span>
-          <span style={{ fontFamily: mono, fontSize: 11, color: full ? '#F2C14E' : '#D9C49A' }}>
-            {full ? '⭐ READY TO HARVEST' : `${value}/50 · ▸ CLICK TO TEND`}
-          </span>
-        </span>
-      </button>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: horizon, background: '#7FBFE6' }} />
+      <div style={{ position: 'absolute', top: horizon, left: 0, right: 0, bottom: 0, background: '#5A9E3D' }} />
+      <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: sceneRight, background: '#4FA3D1' }} />
     </div>
+  )
+}
+
+function Poi({ id }: { id: Exclude<(typeof SECTIONS)[number]['id'], null> }) {
+  const active = useFarm((s) => s.win === id)
+  const section = SECTIONS.find((s) => s.id === id)!
+  const [top, left] = POI_POS[id]
+  return (
+    <button
+      type="button"
+      onClick={() => farmActions.toggleWin(id)}
+      style={{ position: 'absolute', top, left, zIndex: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, border: 0, background: 'transparent', cursor: 'pointer', padding: 0 }}
+    >
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#4A2F18', padding: '5px 11px', boxShadow: active ? '3px 3px 0 rgba(0,0,0,.35), inset 0 0 0 2px #F2C14E' : '3px 3px 0 rgba(0,0,0,.35)' }}>
+        <Icon href={section.icon} size={18} />
+        <span style={{ fontFamily: title, fontSize: 15, color: '#F6E7C5', whiteSpace: 'nowrap' }}>
+          {section.label}
+        </span>
+      </span>
+      <span style={{ color: '#4A2F18', fontSize: 13, lineHeight: 1, animation: 'farm-bob 1.4s ease-in-out infinite' }}>▼</span>
+    </button>
+  )
+}
+
+/** Permanent pixel-art fence enclosing a section. */
+function ZoneFenceArt({ zone }: { zone: Zone }) {
+  const f = zone.fence
+  return (
+    <div style={{ position: 'absolute', top: f.top, left: f.left, width: f.w, height: f.h, zIndex: 2, pointerEvents: 'none' }}>
+      <Fence w={f.w} h={f.h} openTop={f.openTop ?? true} />
+    </div>
+  )
+}
+
+/**
+ * Transparent click/hover target over a section. The fence is always on; hovering
+ * lifts a name/progress sign + subtle highlight, and clicking zooms the camera in.
+ */
+function ZoneHotspot({ zone }: { zone: Zone }) {
+  const focused = useFarm((s) => s.focusZone !== null)
+  const value = useFarm((s) => s.meters[zone.id])
+  const full = value >= 50
+  const { top, left, w, h } = zone.hit
+  return (
+    <button
+      type="button"
+      className="farm-hotspot"
+      onClick={() => farmActions.focusOn(zone.id)}
+      aria-label={`Focus ${zone.name}`}
+      style={{ position: 'absolute', top, left, width: w, height: h, zIndex: 6, border: 0, background: 'transparent', padding: 0, cursor: 'pointer', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}
+    >
+      <span className="farm-hotspot-hi" style={{ position: 'absolute', inset: 0, background: 'rgba(242,193,78,.14)', boxShadow: 'inset 0 0 0 2px rgba(242,193,78,.5)' }} />
+      <span
+        className="farm-hotspot-sign"
+        style={{ position: 'absolute', top: -8, left: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: '#4A2F18', padding: '6px 12px', boxShadow: '3px 3px 0 rgba(0,0,0,.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}
+      >
+        <span style={{ fontFamily: title, fontSize: 16, color: '#F6E7C5' }}>{zone.name}</span>
+        <span style={{ fontFamily: mono, fontSize: 11, color: full ? '#F2C14E' : '#D9C49A' }}>
+          {full ? '⭐ READY TO HARVEST' : `${value}/50 · ▸ CLICK TO TEND`}
+        </span>
+      </span>
+    </button>
   )
 }
 
@@ -145,11 +144,22 @@ function FocusPanel() {
 
   return (
     <>
-      <div onClick={farmActions.clearFocus} style={{ position: 'fixed', inset: 0, zIndex: 30, background: 'radial-gradient(circle at 50% 46%, rgba(30,39,73,0) 30%, rgba(30,39,73,.5) 100%)', animation: 'farm-fadeIn .4s ease' }} />
-      <button type="button" className="farm-action" onClick={farmActions.clearFocus} style={{ position: 'fixed', top: 22, left: 26, zIndex: 33, display: 'inline-flex', alignItems: 'center', gap: 6, border: 0, cursor: 'pointer', background: '#4A2F18', color: '#F6E7C5', fontFamily: title, fontSize: 16, padding: '8px 14px', boxShadow: '3px 3px 0 rgba(0,0,0,.35)', animation: 'farm-pop .2s ease-out' }}>
+      <div
+        onClick={farmActions.clearFocus}
+        style={{ position: 'fixed', inset: 0, zIndex: 30, background: 'radial-gradient(circle at 50% 46%, rgba(30,39,73,0) 34%, rgba(30,39,73,.42) 100%)', animation: 'farm-fadeIn .4s ease' }}
+      />
+      <button
+        type="button"
+        className="farm-action"
+        onClick={farmActions.clearFocus}
+        style={{ position: 'fixed', top: 22, left: 26, zIndex: 33, display: 'inline-flex', alignItems: 'center', gap: 6, border: 0, cursor: 'pointer', background: '#4A2F18', color: '#F6E7C5', fontFamily: title, fontSize: 16, padding: '8px 14px', boxShadow: '3px 3px 0 rgba(0,0,0,.35)', animation: 'farm-pop .2s ease-out' }}
+      >
         ← BACK
       </button>
-      <div onClick={(e) => e.stopPropagation()} style={{ position: 'fixed', left: '50%', bottom: 116, transform: 'translateX(-50%)', zIndex: 33, width: 380, background: '#8B5A2B', padding: 5, boxShadow: '6px 6px 0 rgba(0,0,0,.45), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18', animation: 'farm-pop .22s ease-out' }}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: 'fixed', left: '50%', bottom: 116, transform: 'translateX(-50%)', zIndex: 33, width: 380, background: '#8B5A2B', padding: 5, boxShadow: '6px 6px 0 rgba(0,0,0,.45), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18', animation: 'farm-pop .22s ease-out' }}
+      >
         <div style={{ position: 'relative', background: '#F6E7C5', padding: '14px 16px', boxShadow: 'inset 0 0 0 2px #D9C49A' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
             <span style={{ fontFamily: title, fontSize: 22, color: '#3B2A1A' }}>{zone.name}</span>
@@ -159,7 +169,12 @@ function FocusPanel() {
           <div key={pulse} style={{ margin: '12px 0', transformOrigin: 'left center', animation: pulse ? 'farm-tendPulse .32s ease-out' : undefined }}>
             <Meter value={value} color={full ? '#F2C14E' : zone.chip} />
           </div>
-          <button type="button" className="farm-action" onClick={() => farmActions.tend(zone.id, zone.name)} style={{ display: 'inline-flex', alignItems: 'center', border: 0, cursor: 'pointer', background: chipBg, color: chipFg, fontFamily: title, fontSize: 17, padding: '7px 16px', whiteSpace: 'nowrap', boxShadow: '2px 2px 0 rgba(0,0,0,.3)', animation: full ? 'farm-bob 1s ease-in-out infinite' : undefined }}>
+          <button
+            type="button"
+            className="farm-action"
+            onClick={() => farmActions.tend(zone.id, zone.name)}
+            style={{ display: 'inline-flex', alignItems: 'center', border: 0, cursor: 'pointer', background: chipBg, color: chipFg, fontFamily: title, fontSize: 17, padding: '7px 16px', whiteSpace: 'nowrap', boxShadow: '2px 2px 0 rgba(0,0,0,.3)', animation: full ? 'farm-bob 1s ease-in-out infinite' : undefined }}
+          >
             {chipLabel}
           </button>
           <TendBurst zone={zone.id} />
@@ -169,6 +184,7 @@ function FocusPanel() {
   )
 }
 
+/** Top-right farm panel: status + which critter is out. */
 function StatusHud() {
   const helped = useFarm((s) => s.helped)
   const focused = useFarm((s) => s.focusZone !== null)
@@ -205,7 +221,13 @@ function Hotbar() {
         const locked = s.id === null
         const active = !locked && win === s.id
         return (
-          <button key={i} type="button" className="farm-hotbar-slot" onClick={() => (locked ? farmActions.lockedToast() : farmActions.toggleWin(s.id!))} style={{ position: 'relative', width: 62, height: 62, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: active ? '#7A4E28' : locked ? '#5E3D1F' : '#6E4523', opacity: locked ? 0.75 : 1, boxShadow: active ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}>
+          <button
+            key={i}
+            type="button"
+            className="farm-hotbar-slot"
+            onClick={() => (locked ? farmActions.lockedToast() : farmActions.toggleWin(s.id!))}
+            style={{ position: 'relative', width: 62, height: 62, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: active ? '#7A4E28' : locked ? '#5E3D1F' : '#6E4523', opacity: locked ? 0.75 : 1, boxShadow: active ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}
+          >
             <span style={{ position: 'absolute', top: 2, left: 4, fontFamily: title, fontSize: 11, color: active ? '#F2C14E' : '#D9C49A' }}>{i + 1}</span>
             <Icon href={s.icon} size={36} />
             <span className="farm-tip">{s.label}</span>
@@ -222,7 +244,10 @@ function ContentWindow() {
   const { title: winTitle, body: winBody } = WINDOW_CONTENT[win]
   return (
     <div onClick={farmActions.closeWin} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(30,39,73,.18)' }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)', width: 640, background: '#8B5A2B', padding: 6, boxShadow: '6px 6px 0 rgba(0,0,0,.45), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18', animation: 'farm-pop .18s ease-out' }}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)', width: 640, background: '#8B5A2B', padding: 6, boxShadow: '6px 6px 0 rgba(0,0,0,.45), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18', animation: 'farm-pop .18s ease-out' }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#4A2F18', padding: '8px 12px' }}>
           <span style={{ fontFamily: title, fontSize: 20, color: '#F6E7C5' }}>{winTitle}</span>
           <button type="button" onClick={farmActions.closeWin} style={{ width: 24, height: 24, border: 0, cursor: 'pointer', background: 'transparent', color: '#F6E7C5', fontFamily: title, fontSize: 18 }}>✕</button>
@@ -236,26 +261,52 @@ function ContentWindow() {
 }
 
 export default function DesktopValley() {
-  const s = useCover()
-  const focusZone = useFarm((st) => st.focusZone)
-  const activePet = useFarm((st) => st.activePet)
+  const scaleD = useFarm((s) => s.scaleD)
+  const focusZone = useFarm((s) => s.focusZone)
+  const activePet = useFarm((s) => s.activePet)
+  const focused = focusZone ? ZONES.find((z) => z.id === focusZone) ?? null : null
+
+  // Camera. Base transform centers the scene; focusing pans a section's focus
+  // point to the viewport centre and scales up (translate(-50%,-50%) cancels the
+  // scene-centre origin, so screen(p) = viewportCentre + s·(p − sceneCentre)).
+  const transform = focused
+    ? `translate(-50%, -50%) translate(${(-focused.zoom * (focused.focus[0] - SCENE_W / 2)).toFixed(1)}px, ${(-focused.zoom * (focused.focus[1] - SCENE_H / 2)).toFixed(1)}px) scale(${focused.zoom})`
+    : `translate(-50%, -50%) scale(${scaleD})`
+
   const petBounds = PET_BOUNDS[activePet]
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#7FBFE6' }}>
-      {/* Stretchy COVER background — fills the viewport, no distortion. */}
-      <SceneBackdrop />
-
-      {/* Roaming critter scales with the landscape (glued), fades while focusing. */}
-      <div style={{ position: 'absolute', top: '50%', left: '50%', width: SCENE_W, height: SCENE_H, transform: `translate(-50%, -50%) scale(${s})`, transformOrigin: 'center', zIndex: 1, opacity: focusZone ? 0 : 1, pointerEvents: focusZone ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
+      <FillBackdrop />
+      {/* Fixed, contain-scaled 1440×900 prop canvas on top of the stretch background. */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: SCENE_W,
+          height: SCENE_H,
+          transform,
+          transformOrigin: 'center',
+          transition: 'transform .55s cubic-bezier(.22,.61,.36,1)',
+        }}
+      >
+        <SceneBackground />
+        <SceneProps />
+        {ZONES.map((z) => (
+          <ZoneFenceArt key={z.id} zone={z} />
+        ))}
         <DesktopPet key={activePet} zone={activePet} {...petBounds} />
+        {ZONES.map((z) => (
+          <ZoneHotspot key={z.id} zone={z} />
+        ))}
+        {/* Portfolio POIs fade out while a section is focused. */}
+        <div style={{ opacity: focusZone ? 0 : 1, pointerEvents: focusZone ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
+          {SECTIONS.filter((s) => s.id).map((s) => (
+            <Poi key={s.id} id={s.id!} />
+          ))}
+        </div>
       </div>
-
-      {/* The 4 fixed-size farm entities, glued to the backdrop. */}
-      {ZONES.map((z) => (
-        <ZoneGroup key={z.id} zone={z} s={s} focusedId={focusZone} />
-      ))}
-
       <PetPicker />
       <StatusHud />
       <Hotbar />
