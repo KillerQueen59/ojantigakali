@@ -7,7 +7,6 @@ import { SECTIONS, ZONES, type Zone } from '../../data/zones'
 import { farmActions, useFarm } from '../../state/farmStore'
 import SceneBackground from '../art/SceneBackground'
 import SceneProps from '../art/SceneProps'
-import Fence from '../Fence'
 import PixelSprite from '../PixelSprite'
 import DesktopPet from './DesktopPet'
 import Meter from '../Meter'
@@ -52,16 +51,6 @@ function FillBackdrop() {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: horizon, background: '#7FBFE6' }} />
       <div style={{ position: 'absolute', top: horizon, left: 0, right: 0, bottom: 0, background: '#5A9E3D' }} />
       <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: sceneRight, background: '#4FA3D1' }} />
-    </div>
-  )
-}
-
-/** Permanent pixel-art fence enclosing a section. */
-function ZoneFenceArt({ zone }: { zone: Zone }) {
-  const f = zone.fence
-  return (
-    <div style={{ position: 'absolute', top: f.top, left: f.left, width: f.w, height: f.h, zIndex: 2, pointerEvents: 'none' }}>
-      <Fence w={f.w} h={f.h} openTop={f.openTop ?? true} />
     </div>
   )
 }
@@ -346,9 +335,6 @@ export default function DesktopValley() {
         <SceneBackground />
         <SceneProps />
         <ClickPing />
-        {ZONES.map((z) => (
-          <ZoneFenceArt key={z.id} zone={z} />
-        ))}
         <DesktopPet key={activePet} zone={activePet} {...petBounds} />
         {ZONES.map((z) => (
           <ZoneHotspot key={z.id} zone={z} />
