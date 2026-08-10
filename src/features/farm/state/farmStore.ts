@@ -30,6 +30,8 @@ export type FarmState = {
   focusZone: ZoneId | null
   /** Which critter is currently roaming the valley (only one at a time). */
   activePet: ZoneId
+  /** Where the active critter should walk to (scene coords), set by clicking the ground. */
+  petTarget: { x: number; y: number } | null
   mScreen: MobileScreen
   farmPage: number
   harvest: InventoryEntry | null
@@ -81,6 +83,7 @@ function initialState(): FarmState {
     win: null,
     focusZone: null,
     activePet: 'crop',
+    petTarget: null,
     mScreen: 'home',
     farmPage: 1,
     harvest: null,
@@ -152,7 +155,9 @@ export const farmActions = {
 
   focusOn: (zoneId: ZoneId) => set({ focusZone: zoneId }),
   clearFocus: () => set({ focusZone: null }),
-  setPet: (zoneId: ZoneId) => set({ activePet: zoneId }),
+  setPet: (zoneId: ZoneId) => set({ activePet: zoneId, petTarget: null }),
+  setPetTarget: (x: number, y: number) => set({ petTarget: { x, y } }),
+  clearPetTarget: () => set({ petTarget: null }),
 
   toggleWin: (id: SectionId) => set({ win: state.win === id ? null : id }),
   openApp: (id: SectionId) => set({ win: id, mScreen: 'app' }),

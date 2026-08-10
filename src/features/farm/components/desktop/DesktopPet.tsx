@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ZoneId } from '../../data/cards'
 import { PETS } from '../../data/pets'
+import { farmActions, useFarm } from '../../state/farmStore'
 import PixelSprite from '../PixelSprite'
 import { useZoneTend } from '../TendBurst'
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 
 type Mode = 'idle' | 'move' | 'hop'
 
@@ -49,6 +52,8 @@ export default function DesktopPet({
   const emoteId = useRef(0)
   const xRef = useRef(x)
   xRef.current = x
+  const yRef = useRef(y)
+  yRef.current = y
   const busy = useRef(false)
   const track = (t: ReturnType<typeof setTimeout>) => {
     timers.current.push(t)
@@ -111,6 +116,29 @@ export default function DesktopPet({
     if (cheered > 0) play()
   }, [cheered, play])
 
+  // Walk to wherever the visitor clicks the ground (overrides wandering).
+  const petTarget = useFarm((s) => s.petTarget)
+  useEffect(() => {
+    if (!petTarget) return
+    busy.current = true
+    const from = xRef.current
+    const tx = clamp(petTarget.x, 70, 1370)
+    const ty = pet.flies ? clamp(petTarget.y, 120, 600) - h / 2 : clamp(petTarget.y, 640, 862) - h
+    const dist = Math.hypot(tx - from, ty - yRef.current)
+    setFacing(tx >= from ? 1 : -1)
+    const seconds = Math.max(0.45, dist * pxSpeed)
+    setDur(seconds)
+    setX(tx)
+    setY(ty)
+    setMode('move')
+    const t = setTimeout(() => {
+      setMode('idle')
+      busy.current = false
+      farmActions.clearPetTarget()
+    }, Math.max(450, seconds * 1000))
+    return () => clearTimeout(t)
+  }, [petTarget, pet.flies, h, pxSpeed])
+
   const animation = pet.flies
     ? mode === 'hop'
       ? 'farm-petHop .44s ease-out'
@@ -123,20 +151,23 @@ export default function DesktopPet({
           : 'farm-petWalk .5s ease-in-out infinite'
         : 'farm-petIdle 2.4s ease-in-out infinite'
 
-  const top = pet.flies ? y : groundY - h
+  const ease = pet.flies ? 'ease-in-out' : 'linear'
 
   return (
     <button
       type="button"
       aria-label={`Play with the ${zone} animal`}
-      onClick={play}
+      onClick={(e) => {
+        e.stopPropagation()
+        play()
+      }}
       style={{
         position: 'absolute',
         left: x,
-        top,
+        top: y,
         width: w,
         transform: 'translateX(-50%)',
-        transition: pet.flies ? `left ${dur}s ease-in-out, top ${dur}s ease-in-out` : `left ${dur}s linear`,
+        transition: `left ${dur}s ${ease}, top ${dur}s ${ease}`,
         border: 0,
         background: 'transparent',
         padding: 0,

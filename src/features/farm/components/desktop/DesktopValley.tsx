@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { WINDOW_CONTENT } from '../../data/content'
 import { PET_META, PET_ORDER, PETS } from '../../data/pets'
 import { POI_POS, SECTIONS, ZONES, type Zone } from '../../data/zones'
@@ -63,7 +63,10 @@ function Poi({ id }: { id: Exclude<(typeof SECTIONS)[number]['id'], null> }) {
   return (
     <button
       type="button"
-      onClick={() => farmActions.toggleWin(id)}
+      onClick={(e) => {
+        e.stopPropagation()
+        farmActions.toggleWin(id)
+      }}
       style={{ position: 'absolute', top, left, zIndex: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, border: 0, background: 'transparent', cursor: 'pointer', padding: 0 }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#4A2F18', padding: '5px 11px', boxShadow: active ? '3px 3px 0 rgba(0,0,0,.35), inset 0 0 0 2px #F2C14E' : '3px 3px 0 rgba(0,0,0,.35)' }}>
@@ -100,7 +103,10 @@ function ZoneHotspot({ zone }: { zone: Zone }) {
     <button
       type="button"
       className="farm-hotspot"
-      onClick={() => farmActions.focusOn(zone.id)}
+      onClick={(e) => {
+        e.stopPropagation()
+        farmActions.focusOn(zone.id)
+      }}
       aria-label={`Focus ${zone.name}`}
       style={{ position: 'absolute', top, left, width: w, height: h, zIndex: 6, border: 0, background: 'transparent', padding: 0, cursor: 'pointer', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}
     >
@@ -239,9 +245,20 @@ function StatusHud() {
 function Hotbar() {
   const win = useFarm((s) => s.win)
   const focused = useFarm((s) => s.focusZone !== null)
+  const [open, setOpen] = useState(true)
   return (
     <div style={{ position: 'fixed', top: 20, left: 24, zIndex: 20, background: '#8B5A2B', padding: 8, display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '4px 4px 0 rgba(0,0,0,.35)', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
-      {SECTIONS.map((s, i) => {
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={open ? 'Collapse menu' : 'Expand menu'}
+        aria-expanded={open}
+        style={{ width: 62, height: 26, border: 0, cursor: 'pointer', background: '#4A2F18', color: '#F6E7C5', fontFamily: title, fontSize: 15, display: 'grid', placeItems: 'center', boxShadow: 'inset 2px 2px 0 #6E4523, inset -2px -2px 0 #2A1B0E' }}
+      >
+        {open ? '▾' : '☰'}
+      </button>
+      {open &&
+        SECTIONS.map((s, i) => {
         const locked = s.id === null
         const active = !locked && win === s.id
         return (
@@ -304,6 +321,11 @@ export default function DesktopValley() {
       <FillBackdrop />
       {/* Fixed, contain-scaled 1440×900 prop canvas on top of the stretch background. */}
       <div
+        onClick={(e) => {
+          if (focusZone) return
+          const r = e.currentTarget.getBoundingClientRect()
+          farmActions.setPetTarget((e.clientX - r.left) / scaleD, (e.clientY - r.top) / scaleD)
+        }}
         style={{
           position: 'absolute',
           top: '50%',
@@ -313,6 +335,7 @@ export default function DesktopValley() {
           transform,
           transformOrigin: 'center',
           transition: 'transform .55s cubic-bezier(.22,.61,.36,1)',
+          cursor: focusZone ? 'default' : 'pointer',
         }}
       >
         <SceneBackground />
