@@ -123,7 +123,7 @@ export default function DesktopPet({
     busy.current = true
     const from = xRef.current
     const tx = clamp(petTarget.x, 70, 1370)
-    const ty = pet.flies ? clamp(petTarget.y, 120, 600) - h / 2 : clamp(petTarget.y, 640, 862) - h
+    const ty = pet.flies ? clamp(petTarget.y, 120, 600) - h / 2 : clamp(petTarget.y, 335, 862) - h
     const dist = Math.hypot(tx - from, ty - yRef.current)
     setFacing(tx >= from ? 1 : -1)
     const seconds = Math.max(0.45, dist * pxSpeed)

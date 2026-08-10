@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { WINDOW_CONTENT } from '../../data/content'
 import { PET_META, PET_ORDER, PETS } from '../../data/pets'
 import { POI_POS, SECTIONS, ZONES, type Zone } from '../../data/zones'
@@ -301,6 +301,35 @@ function ContentWindow() {
   )
 }
 
+/** A short golden ring ping wherever the visitor clicks to send the pet. */
+function ClickPing() {
+  const petTarget = useFarm((s) => s.petTarget)
+  const [pings, setPings] = useState<{ id: number; x: number; y: number }[]>([])
+  const idRef = useRef(0)
+  const lastRef = useRef('')
+  useEffect(() => {
+    if (!petTarget) return
+    const key = `${petTarget.x.toFixed(1)},${petTarget.y.toFixed(1)}`
+    if (key === lastRef.current) return
+    lastRef.current = key
+    const id = ++idRef.current
+    const { x, y } = petTarget
+    setPings((p) => [...p, { id, x, y }])
+    const t = setTimeout(() => setPings((p) => p.filter((k) => k.id !== id)), 700)
+    return () => clearTimeout(t)
+  }, [petTarget])
+  return (
+    <>
+      {pings.map((p) => (
+        <div key={p.id} style={{ position: 'absolute', left: p.x, top: p.y, transform: 'translate(-50%, -50%)', pointerEvents: 'none', zIndex: 2 }}>
+          <div style={{ width: 36, height: 36, boxSizing: 'border-box', borderRadius: '50%', border: '3px solid #F2C14E', boxShadow: '0 0 0 1px rgba(74,47,24,.5)', animation: 'farm-ping .7s ease-out forwards' }} />
+          <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#F2C14E', animation: 'farm-pingDot .7s ease-out forwards' }} />
+        </div>
+      ))}
+    </>
+  )
+}
+
 export default function DesktopValley() {
   const scaleD = useFarm((s) => s.scaleD)
   const focusZone = useFarm((s) => s.focusZone)
@@ -340,6 +369,7 @@ export default function DesktopValley() {
       >
         <SceneBackground />
         <SceneProps />
+        <ClickPing />
         {ZONES.map((z) => (
           <ZoneFenceArt key={z.id} zone={z} />
         ))}
