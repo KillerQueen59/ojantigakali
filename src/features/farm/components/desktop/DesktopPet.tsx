@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ZoneId } from '../../data/cards'
-import { PETS } from '../../data/pets'
+import { PETS, type Pet } from '../../data/pets'
 import { farmActions, useFarm } from '../../state/farmStore'
 import PixelSprite from '../PixelSprite'
 import { useZoneTend } from '../TendBurst'
@@ -19,6 +19,7 @@ type Mode = 'idle' | 'move' | 'hop'
  */
 export default function DesktopPet({
   zone,
+  pet: petOverride,
   minX,
   maxX,
   groundY = 0,
@@ -28,6 +29,8 @@ export default function DesktopPet({
   pixel = 4,
 }: {
   zone: ZoneId
+  /** Custom critter to render instead of the zone's farm animal (interior house pet). */
+  pet?: Pet
   minX: number
   maxX: number
   groundY?: number
@@ -36,7 +39,7 @@ export default function DesktopPet({
   pxSpeed: number
   pixel?: number
 }) {
-  const pet = PETS[zone]
+  const pet = petOverride ?? PETS[zone]
   const w = pet.rows[0].length * pixel
   const h = pet.rows.length * pixel
   const midX = (minX + maxX) / 2

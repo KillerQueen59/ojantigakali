@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { WINDOW_CONTENT } from '../../data/content'
-import { PET_META, PET_ORDER, PETS } from '../../data/pets'
-import { SECTIONS, ZONES, type Zone } from '../../data/zones'
-import { farmActions, useFarm } from '../../state/farmStore'
+import { PET_META, PETS } from '../../data/pets'
+import { ZONES, type Zone } from '../../data/zones'
+import { cooldownLeft, farmActions, useFarm } from '../../state/farmStore'
 import SceneBackground from '../art/SceneBackground'
 import SceneProps from '../art/SceneProps'
 import PixelSprite from '../PixelSprite'
@@ -16,25 +15,16 @@ import TendBurst, { useZoneTend } from '../TendBurst'
 const PET_BOUNDS: Record<Zone['id'], { minX: number; maxX: number; groundY?: number; minY?: number; maxY?: number; pxSpeed: number }> = {
   crop: { minX: 300, maxX: 500, groundY: 830, pxSpeed: 0.011 },
   barn: { minX: 560, maxX: 780, groundY: 800, pxSpeed: 0.017 },
-  coop: { minX: 950, maxX: 1170, groundY: 812, pxSpeed: 0.011 },
+  coop: { minX: 1046, maxX: 1240, groundY: 812, pxSpeed: 0.011 },
   orchard: { minX: 840, maxX: 986, minY: 270, maxY: 430, pxSpeed: 0.009 },
 }
 
 const title = 'var(--farm-font-title)'
 const mono = 'var(--farm-font-mono)'
-const body = 'var(--farm-font-body)'
 
 const SCENE_W = 1440
 const SCENE_H = 900
 const HORIZON = 330 // grass line in scene coords
-
-function Icon({ href, size }: { href: string; size: number }) {
-  return (
-    <svg width={size} height={size} shapeRendering="crispEdges" aria-hidden>
-      <use href={href} />
-    </svg>
-  )
-}
 
 /**
  * Full-viewport stretchable background behind the fixed prop canvas. Sky fills to
@@ -89,11 +79,39 @@ function ZoneHotspot({ zone }: { zone: Zone }) {
   )
 }
 
+/**
+ * The farmhouse itself is the way back inside. A transparent hit area over the
+ * house art (scene coords) with a permanent wooden sign; hovering lifts the sign
+ * and highlights the house. Lives inside the scaled canvas so it tracks the art.
+ */
+function HouseHotspot() {
+  const focused = useFarm((s) => s.focusZone !== null)
+  return (
+    <button
+      type="button"
+      className="farm-hotspot"
+      onClick={(e) => {
+        e.stopPropagation()
+        farmActions.goInside()
+      }}
+      aria-label="Go back inside the farmhouse"
+      style={{ position: 'absolute', top: 96, left: 50, width: 280, height: 220, zIndex: 6, border: 0, background: 'transparent', padding: 0, cursor: 'pointer', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}
+    >
+      <span className="farm-hotspot-hi" style={{ position: 'absolute', inset: 0, background: 'rgba(242,193,78,.12)', boxShadow: 'inset 0 0 0 2px rgba(242,193,78,.5)' }} />
+      <span
+        style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', display: 'inline-flex', alignItems: 'center', gap: 6, background: '#4A2F18', color: '#F6E7C5', fontFamily: title, fontSize: 16, padding: '7px 13px', boxShadow: '3px 3px 0 rgba(0,0,0,.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}
+      >
+        🏠 ‹ GO BACK INSIDE
+      </span>
+    </button>
+  )
+}
+
 /** Fixed HUD shown while a section is focused: meter + water/feed action + exit. */
 function FocusPanel() {
   const zoneId = useFarm((s) => s.focusZone)
   const value = useFarm((s) => (s.focusZone ? s.meters[s.focusZone] : 0))
-  const tended = useFarm((s) => (s.focusZone ? !!s.tended[s.focusZone] : false))
+  const cdLeft = useFarm((s) => (s.focusZone ? cooldownLeft(s, s.focusZone) : 0))
   const pulse = useZoneTend(zoneId ?? 'crop')
 
   useEffect(() => {
@@ -108,9 +126,10 @@ function FocusPanel() {
   if (!zoneId) return null
   const zone = ZONES.find((z) => z.id === zoneId)!
   const full = value >= 50
-  const chipBg = full ? '#F2C14E' : tended ? '#D9C49A' : zone.chip
-  const chipFg = full || tended ? '#3B2A1A' : '#FFF'
-  const chipLabel = full ? '⭐ HARVEST!' : tended ? '✓ TENDED' : zone.action
+  const cooling = !full && cdLeft > 0
+  const chipBg = full ? '#F2C14E' : cooling ? '#D9C49A' : zone.chip
+  const chipFg = full || cooling ? '#3B2A1A' : '#FFF'
+  const chipLabel = full ? '⭐ HARVEST!' : cooling ? `⏳ ${cdLeft}s` : zone.action
 
   return (
     <>
@@ -143,7 +162,8 @@ function FocusPanel() {
             type="button"
             className="farm-action"
             onClick={() => farmActions.tend(zone.id, zone.name)}
-            style={{ display: 'inline-flex', alignItems: 'center', border: 0, cursor: 'pointer', background: chipBg, color: chipFg, fontFamily: title, fontSize: 17, padding: '7px 16px', whiteSpace: 'nowrap', boxShadow: '2px 2px 0 rgba(0,0,0,.3)', animation: full ? 'farm-bob 1s ease-in-out infinite' : undefined }}
+            disabled={cooling}
+            style={{ display: 'inline-flex', alignItems: 'center', border: 0, cursor: cooling ? 'not-allowed' : 'pointer', opacity: cooling ? 0.85 : 1, background: chipBg, color: chipFg, fontFamily: title, fontSize: 17, padding: '7px 16px', whiteSpace: 'nowrap', boxShadow: '2px 2px 0 rgba(0,0,0,.3)', animation: full ? 'farm-bob 1s ease-in-out infinite' : undefined }}
           >
             {chipLabel}
           </button>
@@ -168,99 +188,16 @@ function StatusHud() {
         <div style={{ fontFamily: title, fontSize: 17, color: '#3B2A1A' }}>FARM STATUS</div>
         <div style={{ fontFamily: mono, fontSize: 12, color: '#6E4523', marginTop: 4 }}>{helped} VISITORS HELPED TODAY</div>
         <div style={{ fontFamily: mono, fontSize: 12, color: '#B8802F' }}>{readyLabel}</div>
-        {/* Merged critter picker: pick which single critter roams the valley. */}
-        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '2px solid #E5D3A8' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <span style={{ width: 26, height: 22, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
-              <PixelSprite rows={pet.rows} palette={pet.palette} pixel={2} />
-            </span>
-            <span style={{ fontFamily: mono, fontSize: 11, color: '#6E4523' }}>OUT NOW · {PET_META[activePet].label}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 5, marginTop: 7 }}>
-            {PET_ORDER.map((zone) => {
-              const on = activePet === zone
-              const p = PETS[zone]
-              return (
-                <button
-                  key={zone}
-                  type="button"
-                  className="farm-tile"
-                  onClick={() => farmActions.setPet(zone)}
-                  title={PET_META[zone].label}
-                  aria-label={PET_META[zone].label}
-                  aria-pressed={on}
-                  style={{ width: 36, height: 36, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: on ? '#7A4E28' : '#6E4523', boxShadow: on ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}
-                >
-                  <span style={{ width: 30, height: 26, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
-                    <PixelSprite rows={p.rows} palette={p.palette} pixel={2} />
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+        {/* Which critter is out now — pick it inside the farmhouse. */}
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '2px solid #E5D3A8', display: 'flex', alignItems: 'center', gap: 7 }}>
+          <span style={{ width: 26, height: 22, display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+            <PixelSprite rows={pet.rows} palette={pet.palette} pixel={2} />
+          </span>
+          <span style={{ fontFamily: mono, fontSize: 11, color: '#6E4523' }}>OUT NOW · {PET_META[activePet].label}</span>
         </div>
         <button type="button" onClick={farmActions.resetDemo} style={{ marginTop: 8, border: 0, background: 'transparent', cursor: 'pointer', fontFamily: mono, fontSize: 10, color: '#A9713C', padding: 0 }}>
           ↺ RESET DEMO
         </button>
-      </div>
-    </div>
-  )
-}
-
-function Hotbar() {
-  const win = useFarm((s) => s.win)
-  const focused = useFarm((s) => s.focusZone !== null)
-  const [open, setOpen] = useState(true)
-  return (
-    <div style={{ position: 'fixed', top: 20, left: 24, zIndex: 20, background: '#8B5A2B', padding: 8, display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '4px 4px 0 rgba(0,0,0,.35)', opacity: focused ? 0 : 1, pointerEvents: focused ? 'none' : 'auto', transition: 'opacity .3s ease' }}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label={open ? 'Collapse menu' : 'Expand menu'}
-        aria-expanded={open}
-        style={{ width: 62, height: 26, border: 0, cursor: 'pointer', background: '#4A2F18', color: '#F6E7C5', fontFamily: title, fontSize: 15, display: 'grid', placeItems: 'center', boxShadow: 'inset 2px 2px 0 #6E4523, inset -2px -2px 0 #2A1B0E' }}
-      >
-        {open ? '▾' : '☰'}
-      </button>
-      {open &&
-        SECTIONS.map((s, i) => {
-        const locked = s.id === null
-        const active = !locked && win === s.id
-        return (
-          <button
-            key={i}
-            type="button"
-            className="farm-hotbar-slot"
-            onClick={() => (locked ? farmActions.lockedToast() : farmActions.toggleWin(s.id!))}
-            style={{ position: 'relative', width: 62, height: 62, border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', background: active ? '#7A4E28' : locked ? '#5E3D1F' : '#6E4523', opacity: locked ? 0.75 : 1, boxShadow: active ? 'inset 0 0 0 3px #F2C14E' : 'inset 2px 2px 0 #4A2F18, inset -2px -2px 0 #A9713C' }}
-          >
-            <span style={{ position: 'absolute', top: 2, left: 4, fontFamily: title, fontSize: 11, color: active ? '#F2C14E' : '#D9C49A' }}>{i + 1}</span>
-            <Icon href={s.icon} size={36} />
-            <span className="farm-tip">{s.label}</span>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-function ContentWindow() {
-  const win = useFarm((s) => s.win)
-  if (!win) return null
-  const { title: winTitle, body: winBody } = WINDOW_CONTENT[win]
-  return (
-    <div onClick={farmActions.closeWin} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(30,39,73,.18)' }}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)', width: 640, background: '#8B5A2B', padding: 6, boxShadow: '6px 6px 0 rgba(0,0,0,.45), inset 2px 2px 0 #A9713C, inset -2px -2px 0 #4A2F18', animation: 'farm-pop .18s ease-out' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#4A2F18', padding: '8px 12px' }}>
-          <span style={{ fontFamily: title, fontSize: 20, color: '#F6E7C5' }}>{winTitle}</span>
-          <button type="button" onClick={farmActions.closeWin} style={{ width: 24, height: 24, border: 0, cursor: 'pointer', background: 'transparent', color: '#F6E7C5', fontFamily: title, fontSize: 18 }}>✕</button>
-        </div>
-        <div style={{ background: '#F6E7C5', padding: '24px 28px', fontFamily: body, fontSize: 16, lineHeight: 1.65, color: '#3B2A1A', maxHeight: 560, overflow: 'auto' }}>
-          {winBody}
-        </div>
       </div>
     </div>
   )
@@ -336,14 +273,13 @@ export default function DesktopValley() {
         <SceneProps />
         <ClickPing />
         <DesktopPet key={activePet} zone={activePet} {...petBounds} />
+        <HouseHotspot />
         {ZONES.map((z) => (
           <ZoneHotspot key={z.id} zone={z} />
         ))}
       </div>
       <StatusHud />
-      <Hotbar />
       <FocusPanel />
-      <ContentWindow />
     </div>
   )
 }

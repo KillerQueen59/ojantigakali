@@ -19,8 +19,9 @@ export const SECTIONS: Section[] = [
   { id: null, label: 'BLOG', icon: '#p-lock' },
 ]
 
-/** POI marker positions on the 1440×900 desktop scene: [top, left]. */
-export const POI_POS: Record<SectionId, [number, number]> = {
+/** POI marker positions on the 1440×900 desktop scene: [top, left].
+ *  Partial: some sections (e.g. `profile`) open from furniture, not a map marker. */
+export const POI_POS: Partial<Record<SectionId, [number, number]>> = {
   about: [118, 130],
   contact: [186, 300],
   experience: [428, 344],
@@ -57,7 +58,7 @@ export type Zone = {
 export const ZONES: Zone[] = [
   { id: 'crop', name: 'CROP FIELD', sub: 'PARSNIPS, BERRIES & MYSTERY SEEDS', action: '💧 POUR WATER', chip: '#3E6FA8', hit: { top: 356, left: 164, w: 320, h: 128 }, fence: { top: 366, left: 160, w: 320, h: 110, openTop: false }, focus: [326, 420], zoom: 1.7 },
   { id: 'barn', name: 'BARN · DAISY & PIP', sub: 'DAISY THE COW & PIP THE PIG', action: '🌾 FEED HAY', chip: '#B8802F', hit: { top: 458, left: 466, w: 314, h: 250 }, fence: { top: 700, left: 456, w: 340, h: 52, openTop: false }, focus: [624, 588], zoom: 1.5 },
-  { id: 'coop', name: 'COOP · HENS', sub: 'THREE VERY BUSY HENS', action: '🌾 FEED GRAIN', chip: '#B8802F', hit: { top: 500, left: 936, w: 224, h: 196 }, fence: { top: 628, left: 962, w: 204, h: 54, openTop: false }, focus: [1052, 578], zoom: 1.7 },
+  { id: 'coop', name: 'COOP · HENS', sub: 'THREE VERY BUSY HENS', action: '🌾 FEED GRAIN', chip: '#B8802F', hit: { top: 500, left: 1032, w: 224, h: 196 }, fence: { top: 628, left: 1058, w: 204, h: 54, openTop: false }, focus: [1148, 578], zoom: 1.7 },
   { id: 'orchard', name: 'ORCHARD', sub: 'APPLES & PEACHES', action: '💧 POUR WATER', chip: '#3E6FA8', hit: { top: 296, left: 758, w: 240, h: 200 }, fence: { top: 430, left: 786, w: 184, h: 56, openTop: false }, focus: [876, 344], zoom: 1.7 },
 ]
 

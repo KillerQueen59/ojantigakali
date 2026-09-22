@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import type { SectionId } from '../state/farmStore'
+import PersonalContent from '../components/PersonalContent'
+import ProfileContent from '../components/ProfileContent'
 
 const body = "var(--farm-font-body)"
 const mono = "var(--farm-font-mono)"
@@ -37,20 +39,12 @@ export type WindowContent = { title: string; body: ReactNode }
 // the copy — replace with real values when available.
 export const WINDOW_CONTENT: Record<SectionId, WindowContent> = {
   about: {
-    title: 'ABOUT',
-    body: (
-      <div>
-        <H>Muhammad Fauzan Ramadhan</H>
-        <M>SOFTWARE ENGINEER · FULL-STACK · BOGOR, ID</M>
-        <P>
-          I go by Ojan. For the last four years I&rsquo;ve built backend systems that move
-          money &mdash; right now on the Disbursement Team at OY! Indonesia, where our
-          services push high-volume fund transfers across multiple payment providers
-          without losing a rupiah.
-        </P>
-        <P>Off the clock I ship my own projects and take freelance work as Mamen Studio.</P>
-      </div>
-    ),
+    title: 'ABOUT ME',
+    body: <PersonalContent />,
+  },
+  profile: {
+    title: 'PROFILE',
+    body: <ProfileContent />,
   },
   experience: {
     title: 'EXPERIENCE',

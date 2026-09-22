@@ -103,6 +103,29 @@
   100% { transform: translateX(0); }
 }
 
+/* Farmhouse interior (Inside) motion */
+@keyframes farm-flick {
+  0%, 100% { opacity: 0.85; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.14); }
+}
+@keyframes farm-lampSway {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.2deg); }
+}
+@keyframes farm-dustRise {
+  0% { transform: translate(0, 0); opacity: 0; }
+  30% { opacity: 0.55; }
+  100% { transform: translate(24px, -90px); opacity: 0; }
+}
+/* Retro CRT flicker for the TV console screen */
+@keyframes farm-tvFlicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 0.93; }
+  50% { opacity: 0.99; }
+  73% { opacity: 0.9; }
+  75% { opacity: 1; }
+}
+
 /* Mobile scene motion */
 @keyframes farm-cloudDriftM {
   from { transform: translateX(-90px); }
@@ -210,6 +233,15 @@
 .farm-hotbar-slot:hover .farm-tip {
   opacity: 1;
   transform: translate(0, -50%);
+}
+
+/* Farmhouse furniture lift on hover (transform not set inline, so this wins) */
+.farm-lift {
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.farm-lift:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.05);
 }
 
 /* App-grid / dock tile hover (mobile) */

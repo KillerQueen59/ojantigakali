@@ -22,7 +22,7 @@ export default function AboutWindow({
     <div className="flex flex-col gap-6">
       {preview && (
         <ImagePreview
-          src="/ojan.jpg"
+          src="/me-pixel.png"
           alt={name}
           onClose={() => setPreview(false)}
         />
@@ -43,20 +43,17 @@ export default function AboutWindow({
             <div className="img-skeleton absolute inset-0 z-[1]" />
           )}
           <Image
-            src="/ojan.jpg"
+            src="/me-pixel.png"
             alt={name}
             width={120}
             height={150}
-            className="w-full h-full object-cover"
-            style={{ objectPosition: '50% 10%', opacity: photoLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
-            onLoad={() => setPhotoLoaded(true)}
-          />
-          <div
-            className="absolute inset-0 mix-blend-overlay pointer-events-none"
+            className="w-full h-full object-contain"
             style={{
-              background:
-                'linear-gradient(135deg, rgba(0,200,255,0.2) 0%, rgba(180,0,255,0.12) 100%)',
+              imageRendering: 'pixelated',
+              opacity: photoLoaded ? 1 : 0,
+              transition: 'opacity 0.3s ease',
             }}
+            onLoad={() => setPhotoLoaded(true)}
           />
           <div
             className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none"

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   description:
     'Software Engineer specializing in backend systems, fintech, and full-stack development — explored as a Stardew Valley farm.',
   icons: {
-    icon: '/ojantigakali-animated-round.gif',
+    icon: '/farm-chicken-icon.png',
   },
 }
 

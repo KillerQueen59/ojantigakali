@@ -26,7 +26,7 @@ export type RarityStyle = {
   stars: number
 }
 
-export const RARITY_STYLE: Record<Rarity, RarityStyle> = {
+const RARITY_STYLE_FALLBACK: Record<Rarity, RarityStyle> = {
   COMMON: { band: '#6E4523', gem: '#A9713C', art: '#DCCDA4', text: '#F6E7C5', stars: 1 },
   UNCOMMON: { band: '#3E7229', gem: '#74B854', art: '#CFE3B7', text: '#F6E7C5', stars: 2 },
   RARE: { band: '#3E6FA8', gem: '#7FB2E0', art: '#BFD8F0', text: '#F6E7C5', stars: 3 },
@@ -34,7 +34,7 @@ export const RARITY_STYLE: Record<Rarity, RarityStyle> = {
 }
 
 /** Insertion order defines the collector number (1-based index → `000/017`). */
-export const CATALOG = {
+const SET_1 = {
   parsnip: { name: 'PARSNIP', rarity: 'COMMON', type: 'CROP', flavor: 'The first thing anyone learns to grow. Humble, reliable, faintly proud of itself.', stats: [['VALUE', '35g'], ['GROW TIME', '4 DAYS']], art: [[10, 2, 2, 4, '#4E8A38'], [13, 2, 2, 4, '#4E8A38'], [11, 4, 3, 3, '#3E7229'], [8, 7, 8, 6, '#F3E9C7'], [9, 13, 6, 5, '#EDD9AC'], [11, 18, 2, 4, '#E5D3A8'], [9, 8, 2, 4, '#FBF3D9']] },
   strawberry: { name: 'STRAWBERRY', rarity: 'COMMON', type: 'CROP', flavor: 'Sweet, seedy, and gone before it reaches the kitchen.', stats: [['VALUE', '120g'], ['SUGAR', '★★★☆']], art: [[10, 3, 4, 3, '#3E7229'], [7, 5, 10, 3, '#C0392B'], [6, 8, 12, 6, '#E74C3C'], [8, 14, 8, 4, '#C0392B'], [10, 18, 4, 2, '#A93226'], [9, 9, 2, 2, '#F6E7C5'], [13, 11, 2, 2, '#F6E7C5'], [7, 6, 2, 2, '#F1948A']] },
   sunflower: { name: 'SUNFLOWER', rarity: 'UNCOMMON', type: 'CROP', flavor: 'Grown for the seeds. Kept for the way it follows you around the field.', stats: [['VALUE', '180g'], ['HEIGHT', '2.1 M']], art: [[7, 4, 10, 2, '#F2C14E'], [9, 2, 6, 6, '#F2C14E'], [10, 4, 4, 3, '#8B5A2B'], [11, 8, 2, 10, '#4E8A38'], [8, 11, 3, 2, '#4E8A38'], [13, 13, 3, 2, '#4E8A38'], [9, 18, 6, 2, '#3E7229'], [10, 5, 2, 2, '#6E4523']] },
@@ -54,15 +54,40 @@ export const CATALOG = {
   starfruit: { name: 'FALLEN STARFRUIT', rarity: 'LEGENDARY', type: 'ORCHARD', flavor: 'It was in the top branches by morning. Nobody saw it land.', stats: [['VALUE', '3,600g'], ['GLOW', 'BRIGHT']], art: [[10, 1, 4, 4, '#FFF6D8'], [7, 5, 10, 4, '#F2C14E'], [4, 9, 16, 5, '#F8D77E'], [7, 14, 10, 4, '#F2C14E'], [10, 18, 4, 4, '#E0AE3C'], [10, 8, 4, 4, '#FFF6D8'], [2, 10, 2, 2, '#FFF'], [20, 10, 2, 2, '#FFF']] },
 } as const satisfies Record<string, CardItem>
 
-export type CardKey = keyof typeof CATALOG
+export type CardKey = keyof typeof SET_1
 
-export const CATALOG_KEYS = Object.keys(CATALOG) as CardKey[]
-
-export const DROP_TABLE: Record<ZoneId, CardKey[]> = {
+const DROP_TABLE_FALLBACK: Record<ZoneId, CardKey[]> = {
   crop: ['parsnip', 'strawberry', 'sunflower', 'pumpkin', 'rainbowcorn'],
   barn: ['milk', 'butter', 'cheese', 'moonmilk'],
   coop: ['egg', 'speckled', 'goldegg', 'midnightegg'],
   orchard: ['apple', 'peach', 'goldapple', 'starfruit'],
+}
+
+// Live catalog. Starts as the bundled SET 1 (instant paint + offline fallback),
+// then replaced by hydrateCatalog() from GET /api/farm/catalog — the single source
+// of truth both web and mobile hydrate from, so the two clients render the same set.
+// These are ES-module live bindings: consumers re-read the new value once the farm
+// store emits after bootstrap.
+export let CATALOG: Record<CardKey, CardItem> = { ...SET_1 }
+export let CATALOG_KEYS: CardKey[] = Object.keys(SET_1) as CardKey[]
+export let RARITY_STYLE: Record<Rarity, RarityStyle> = RARITY_STYLE_FALLBACK
+export let DROP_TABLE: Record<ZoneId, CardKey[]> = DROP_TABLE_FALLBACK
+
+export type CatalogPayload = {
+  catalog: Record<string, CardItem>
+  keys: string[]
+  rarityStyle: Record<string, RarityStyle>
+  dropTable: Record<string, string[]>
+}
+
+/** Replace the live catalog with the server's. No-ops on an empty/invalid payload. */
+export function hydrateCatalog(p: CatalogPayload | null | undefined): boolean {
+  if (!p || !p.catalog || !Array.isArray(p.keys) || p.keys.length === 0) return false
+  CATALOG = p.catalog as Record<CardKey, CardItem>
+  CATALOG_KEYS = p.keys as CardKey[]
+  if (p.rarityStyle) RARITY_STYLE = p.rarityStyle as Record<Rarity, RarityStyle>
+  if (p.dropTable) DROP_TABLE = p.dropTable as Record<ZoneId, CardKey[]>
+  return true
 }
 
 const DROP_WEIGHT: Record<Rarity, number> = { COMMON: 55, UNCOMMON: 27, RARE: 14, LEGENDARY: 4 }
